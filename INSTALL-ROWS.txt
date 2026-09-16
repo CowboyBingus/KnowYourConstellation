@@ -1,8 +1,8 @@
-Know Your Constellation Rows v1
+Know Your Constellation Rows - v3.12
 
 Requires Bingus Shared Loader v12 or newer, installed separately.
 
-Import Know-Your-Constellation-Rows-v1.zip and Bingus-Shared-Loader-v12.zip
+Import Know-Your-Constellation-Rows-v3.12.zip and Bingus-Shared-Loader-v12.zip
 into your mod manager. Disable the standalone scrolling forecast package,
 enable Rows and the shared loader, then Purge / Deploy.
 With default Arsenal priority, put the shared loader last.

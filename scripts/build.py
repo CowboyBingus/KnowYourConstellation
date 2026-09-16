@@ -74,11 +74,11 @@ def main():
         'deployment_files':files,'files':{p:sha((ROOT/p).read_bytes()) for p in files.values()},
         'resource_sha256':sha(resource),'offline_tests':tests.strip()}
     if args.rows:
-        report.update(version=1, install_instructions='INSTALL-ROWS.txt')
+        report.update(version=REVISION.removeprefix('v'), install_instructions='INSTALL-ROWS.txt')
     release = package_release(ROOT,build,report)
     with zipfile.ZipFile(release) as package:
         manifest = json.loads(package.read('manifest.json'))
-        assert manifest['Name']==name+' - '+('v1' if args.rows else REVISION) and manifest['Guid']==guid
+        assert manifest['Name']==name+' - '+REVISION and manifest['Guid']==guid
         assert manifest['IconPath']==manifest['Options'][0]['Image']=='thumbnail.png'
         archive = package.read('data/'+ARCHIVE)
         entry = struct.unpack_from('<7Q6I',archive,104)
