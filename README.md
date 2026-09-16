@@ -10,3 +10,4 @@ Reveals mission constellations and enemy forecasts on the war table and briefing
 - Uses the game's body font and matching frame style. The briefing forecast stays hidden during pod entry and on the loadout screen.
 - Runs only on your client. Other players need their own copy to see it, and enemy spawns and gameplay remain unchanged.
 - Forecasts describe the mission's composition and eligible enemies. Individual spawns are not guaranteed.
+- The optional [Rows version](docs/ROWS.md) shows the same forecast in static rows so every section is visible at once. Choose one version from the [v3.12 release](https://github.com/CowboyBingus/KnowYourConstellation/releases/tag/v3.12).

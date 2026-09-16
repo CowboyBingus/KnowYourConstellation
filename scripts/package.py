@@ -27,7 +27,7 @@ def package_release(root: Path, build: Path, report: dict) -> Path:
     release_version = 'v' + str(report.get('version') or report['revision']).rsplit('v', 1)[-1]
     display_name = report['name'] + ' - ' + release_version
     release_stem = report['name'].replace(' ', '-') + '-' + release_version
-    files[slug + '-README.txt'] = (root / 'INSTALL.txt').read_bytes()
+    files[slug + '-README.txt'] = (root / report.get('install_instructions', 'INSTALL.txt')).read_bytes()
     thumbnail = root / 'assets/thumbnail.png'
     if thumbnail.is_file():
         files['thumbnail.png'] = thumbnail.read_bytes()
