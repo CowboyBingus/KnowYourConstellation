@@ -11,9 +11,8 @@ return function(create_api,mission,resolve,catalogue,model,panel,build,heavy,hea
         state.status = message
         print('[EnemyIntelligence] '..message)
         pcall(function()
-            local directory = os.getenv('LOCALAPPDATA')
-            if not directory then return end
-            local file = io.open(directory..'/EnemyIntelligence.log','w')
+            local logger=rawget(_G,'CowboyBingusModLoader')
+            local file=logger and logger.open_log and logger.open_log('EnemyIntelligence.log')
             if file then
                 file:write(build.revision..'\n'..message..'\n')
                 file:close()

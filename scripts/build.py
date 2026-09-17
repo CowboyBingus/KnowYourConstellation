@@ -30,6 +30,7 @@ def run(arguments):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--rows', action='store_true', help='Build the alternate static rows package')
+    parser.add_argument('--allow-untested', action='store_true', help='Build a local test package when the runtime differs from the in-game verified payload')
     args = parser.parse_args()
     build = ROOT / ('build/rows' if args.rows else 'build')
     build.mkdir(parents=True, exist_ok=True)
@@ -46,16 +47,16 @@ def main():
     code = compiled.read_bytes()
     assert code[:5] == b'\x1bLJ\x02\x02'
     resource = struct.pack('<II', len(code), 2) + code
+    runtime_verified = sha(resource) == (TESTED_ROWS_RESOURCE_SHA if args.rows else TESTED_RESOURCE_SHA)
+    assert runtime_verified or args.allow_untested, 'Runtime differs from the in-game verified payload; use --allow-untested for a local test build'
     if args.rows:
-        assert sha(resource) == TESTED_ROWS_RESOURCE_SHA, 'Rows runtime differs from the in-game verified payload'
-        # Prove the shared source still builds the exact tested scrolling runtime.
+        # Keep verification of the scrolling alternative separate from rows.
         baseline_source, baseline_code = build / 'scrolling.wrapper.lua', build / 'scrolling.ljbc'
         baseline_source.write_text(wrapper(ROOT, GAME_DLL_SHA, EXE_SHA), encoding='ascii', newline='\n')
         run([LUA, '-bsdW', baseline_source, baseline_code])
         baseline = baseline_code.read_bytes()
-        assert sha(struct.pack('<II', len(baseline), 2) + baseline) == TESTED_RESOURCE_SHA
-    else:
-        assert sha(resource) == TESTED_RESOURCE_SHA, 'Runtime differs from the in-game tested v3.12 payload'
+        scrolling_verified = sha(struct.pack('<II', len(baseline), 2) + baseline) == TESTED_RESOURCE_SHA
+        assert scrolling_verified or args.allow_untested, 'Scrolling runtime differs from the in-game verified payload'
     revision = ROWS_REVISION if args.rows else REVISION
     tests += run([LUA, ROOT / 'tests/test_package.lua', compiled, revision])
     (build / 'mod.lua.main').write_bytes(resource)
@@ -69,8 +70,8 @@ def main():
     report = {'name':name,'slug':name.replace(' ',''),'revision':revision,'guid':guid,
         'description':summary + ' Client-side only. Requires Bingus Shared Loader v12 or newer. Spawns are not guaranteed.',
         'module':MODULE,'game_exe_sha256':EXE_SHA,'game_dll_sha256':GAME_DLL_SHA,
-        'runtime_verified':True,'client_only':True,'network_calls':False,'gameplay_memory_writes':False,
-        'requires':[{'name':'Bingus Shared Loader','revision':'loader-v12','api':1}],
+        'runtime_verified':runtime_verified,'client_only':True,'network_calls':False,'gameplay_memory_writes':False,
+        'requires':[{'name':'Bingus Shared Loader','revision':'loader-v14','api':1}],
         'deployment_files':files,'files':{p:sha((ROOT/p).read_bytes()) for p in files.values()},
         'resource_sha256':sha(resource),'offline_tests':tests.strip()}
     if args.rows:
@@ -88,9 +89,7 @@ def main():
     (build/'build-report.json').write_text(json.dumps(report,indent=2)+'\n',encoding='ascii')
     (build/'offline-tests.txt').write_text(tests,encoding='ascii')
     print(tests.strip())
-    print('PASS: scrolling runtime still matches the in-game tested v3.12 payload')
-    if args.rows:
-        print('PASS: rows runtime matches the in-game verified payload')
+    print('PASS: runtime matches the in-game verified payload' if runtime_verified else 'In-game verification pending for this test build')
     print('Built '+str(release))
 
 

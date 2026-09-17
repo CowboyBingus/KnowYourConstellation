@@ -1,21 +1,52 @@
-Know Your Constellation v3.12
+TEST BUILD: mission-mode and centralized-log corrections. In-game validation pending.
 
-Requires Bingus Shared Loader v12 or newer, installed separately.
+Requires Bingus Shared Loader v14 for the shared log folder.
 
-Import Know-Your-Constellation-v3.12.zip and Bingus-Shared-Loader-v12.zip
+Logs: %LOCALAPPDATA%/CowboyBingus/Helldivers2/Logs
+
+
+
+Know Your Constellation v3.13
+
+
+
+Requires Bingus Shared Loader v14 or newer, installed separately.
+
+
+
+Import Know-Your-Constellation-v3.13.zip and Bingus-Shared-Loader-v14.zip
+
 into your mod manager. Enable both, then Purge / Deploy.
+
 With default Arsenal priority, put the shared loader last.
+
 Disable the previous Enemy Intelligence package if it remains listed.
+
 The stable manager GUID and internal module name preserve one-copy startup.
 
+
+
 Only players with the mod see the forecast. It does not change spawns,
+
 difficulty, gameplay rules or network traffic.
+
 Forecasts are shown on hosted and joinable mission previews and briefing.
+
 They are hidden on loadout and when the corresponding preview is closed.
+
 Spawns are not guaranteed. Unavailable mission data is withheld.
 
+
+
 Supported game build: Steam build 24826606, executable 1.8.45317.0.
+
 The runtime checks the game and executable hashes and stops on a mismatch.
+
 Game updates require revalidation.
 
+
+
 Uninstall: disable this mod, then Purge / Deploy.
+
+Logs: %LOCALAPPDATA%\CowboyBingus\Helldivers2\Logs
+Requires Bingus Shared Loader v14 or newer for this log folder.

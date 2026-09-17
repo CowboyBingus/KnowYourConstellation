@@ -7,7 +7,7 @@ standard Steam installation directory.
 Run `python scripts/build.py`. The build verifies the supported game hashes,
 runs the shared offline suites, compiles stripped bytecode, verifies the runtime
 against the tested v3.12 hash, and creates the release ZIP.
-Run `python scripts/privacy_audit.py --zip releases/Know-Your-Constellation-v3.12.zip`.
+Run `python scripts/privacy_audit.py --zip releases/Know-Your-Constellation-v3.13.zip`.
 Nested workspace projects may share their parent's releases directory.
 
 Run `python scripts/build.py --rows` to build the separate static rows variant.
