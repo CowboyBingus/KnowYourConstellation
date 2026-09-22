@@ -54,14 +54,14 @@ local selected=api.read(board+1012352+92*index,92)
 local op_id=selected:byte(25)
 local category=u32(selected,28)
 assert(category<14)
-put(fixture.game+0x272f820+168*category+9,string.char(1))
+put(fixture.game+0x32e98e0+168*category+9,string.char(1))
 put(campaign+155672,word(1))
 put(campaign+143384,word(planet)..word(op_id)..word(1234567)..string.rep('\0',12))
-put(board+0x1f73a8,qword(0x700000)..qword(0x700100)..word(1)..word(0))
+put(board+0x1f8908,qword(0x700000)..qword(0x700100)..word(1)..word(0))
 put(0x700000,qword(0x700200))
 put(0x700100,word(1234567))
 put(0x700200+88,qword(0x700300)..word(1))
-local defs=api.pointer(api.read(fixture.game+0x277fdd0,8))
+local defs=api.pointer(api.read(fixture.game+0x347cd98,8))
 local count=u32(api.read(defs+53248,4),0)
 local rows=api.read(defs,count*52)
 local dragon_hash
@@ -74,7 +74,7 @@ for i=0,count-1 do
 end
 assert(dragon_hash,'Synthetic modifier definition missing')
 put(0x700300,word(dragon_hash))
-local config=api.pointer(api.read(fixture.game+0x277fe28,8))
+local config=api.pointer(api.read(fixture.game+0x347cdf8,8))
 put(config+73848,string.rep('\0',24))
 put(config+49232,string.rep('\0',24))
 local modified=reader:sample(fixture.screen)
@@ -113,25 +113,25 @@ assert(reads<150,'Joinable forecast exceeded its bounded read budget')
 assert(u32(api.read(joined.board+1548960,4),0)==0xffffffff)
 local descriptor,hovered=join_reader:descriptor('map')
 assert(descriptor and hovered==true,'A selected remote mission must report an active hover')
-put(joined.root+713296,'different mission packet\0'..string.rep('\0',487))
+put(joined.root+713400,'different mission packet\0'..string.rep('\0',487))
 descriptor,hovered=join_reader:descriptor('map')
 assert(descriptor==nil and hovered==true,
     'A loading preview must retain hover activity without using the previous mission')
 overrides={}
-put(joined.board+2058929,string.char(0))
+put(joined.board+2064401,string.char(0))
 descriptor,hovered=join_reader:descriptor('map')
 assert(descriptor==nil and hovered==false,'An inactive preview gate must end the hover without a reader failure')
 overrides={}
 local selection=api.read(joined.board+1548964,8)
 local id,group=u32(selection,0),u32(selection,4)
 if id>=0x80000000 or group==0 then
-    local fallback=api.read(api.pointer(api.read(join.game+0x276c7b8,8))+5633600,12)
+    local fallback=api.read(api.pointer(api.read(join.game+0x3326aa0,8))+5633600,12)
     if id>=0x80000000 then id=u32(fallback,0) end
     if group==0 then group=u32(fallback,8) end
 end
 -- Native controller navigation may provide a fallback selection. Respect it,
 -- but never reuse the cached mission once both selection sources are empty.
-put(join.game+0x276c7b8,qword(0x710000))
+put(join.game+0x3326aa0,qword(0x710000))
 put(joined.board+1548964,word(0xffffffff)..word(0))
 put(0x710000+5633600,word(id)..word(0)..word(group))
 descriptor,hovered=join_reader:descriptor('map')
@@ -144,7 +144,7 @@ overrides={}
 put(joined.board+2053224,word(441))
 assert(not pcall(join_reader.descriptor,join_reader,'map'),'Joinable lookup must reject an oversized table')
 overrides={}
-put(joined.board+4281196,word(0xffffffff))
+put(joined.board+4286668,word(0xffffffff))
 descriptor,hovered=join_reader:descriptor('map')
 assert(descriptor==nil and hovered==true,'A missing preview slot must keep hover activity without reading stale data')
 overrides={}
@@ -152,7 +152,7 @@ put(joined.board+1548960,word(110))
 assert(not pcall(join_reader.descriptor,join_reader,'map'),
     'Invalid local indices must not be treated as joinable mission selection')
 overrides={}
-local remote=api.pointer(api.read(join.game+0x277feb8,8))
+local remote=api.pointer(api.read(join.game+0x347ce80,8))
 -- The synthetic sample is from the native third advertisement list.
 local valid_address
 for _,block in ipairs(blocks) do
@@ -186,13 +186,13 @@ put(remote_data+280*268,remote_static:sub(1,24)..word(910588397)..remote_static:
 assert(not other_reader:sample('map').complete,'A displayed planet hash mismatch must still withhold the report')
 overrides={}
 -- Planet-scoped enemy modifiers must follow the hovered planet, not the ship.
-local globals=api.pointer(api.read(other.game+0x2770628,8))
+local globals=api.pointer(api.read(other.game+0x346d518,8))
 local function scoped_modifier(planet,tag)
-    return string.char(17)..string.rep('\0',3)..word(tag)..string.rep('\0',72)
+    return string.char(17)..string.rep('\0',3)..word(tag+1)..string.rep('\0',72)
         ..word(1)..word(0)..word(planet)..word(0)..string.rep('\0',260)
 end
 put(globals,scoped_modifier(76,11)..scoped_modifier(268,1)..string.rep('\0',30*356))
-local remote_config=api.pointer(api.read(other.game+0x277fe28,8))
+local remote_config=api.pointer(api.read(other.game+0x347cdf8,8))
 put(remote_config+73848,string.rep('\0',24))
 put(remote_config+49232,string.rep('\0',24))
 local scoped=other_reader:sample('map')
@@ -217,3 +217,19 @@ end
 assert(other_reader:sample('map')==nil,'A mission changed during sampling must return pending, not fail the renderer')
 api.read=original_read
 print('PASS: host and joinable forecasts, cross-planet identity and scoped modifiers, pending previews, expiry, bounds and controller readiness')
+
+-- New build: multiple mission exclusions remove each matching canonical tag.
+overrides={}
+put(other.game+0x3773420+896*84,string.rep('\0',20)..word(8)..word(12)..string.rep('\0',868))
+local filtered=other_reader:sample('map')
+for _,tag in ipairs(filtered.tags)do assert(tag~=7 and tag~=11,'One of the native exclusions was ignored')end
+assert(resolve.from_native(1)==31 and resolve.from_native(2)==1 and resolve.from_native(31)==30)
+overrides={}
+put(other.game+0x3773420+896*84,string.rep('\0',52)..string.char(2)..string.rep('\0',811)
+    ..'\073\120\130\127\209\044\124\133'..string.rep('\0',24))
+local horde=other_reader:sample('map')
+assert(horde and horde.complete)
+local found=false
+for _,tag in ipairs(horde.tags)do if tag==31 then found=true end end
+assert(found,'HordeOnly mission mode must add its native tag')
+print('PASS: inserted native tag preserves catalogue IDs; all eight mission exclusions supported')

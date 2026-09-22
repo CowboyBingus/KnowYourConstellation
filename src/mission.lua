@@ -39,13 +39,13 @@ function M.new(api, game, resolve)
     end
 
     function self:screen()
-        local manager = ptr(game + 0x277fe60)
-        local state = read(manager + 140, 24)
+        local manager = ptr(game + 0x347ce28)
+        local state = read(manager + 0x429c, 24)
         local n = u32(state, 20)
         if n < 1 or n > 5 then return nil end
         local top = u32(state, 4 * (n - 1))
-        if top == 12 then return 'map' end
-        if top == 11 then return 'briefing' end
+        if top == 15 then return 'map' end
+        if top == 14 then return 'briefing' end
         return nil
     end
 
@@ -67,11 +67,11 @@ function M.new(api, game, resolve)
         -- The second result distinguishes an ended hover from a selected
         -- mission whose advertised packet or preview is still loading.
         local planet = u32(read(board+1548956,4),0)
-        if planet>=0x80000000 or read(board+2058929,1):byte()==0 then return nil,false end
+        if planet>=0x80000000 or read(board+2064401,1):byte()==0 then return nil,false end
         local selection = read(board+1548964,8)
         local id,group = u32(selection,0),u32(selection,4)
         if id>=0x80000000 or group==0 then
-            local session = ptr(game+0x276c7b8)
+            local session = ptr(game+0x3326aa0)
             local fallback = read(session+5633600,12)
             if id>=0x80000000 then id=u32(fallback,0) end
             if group==0 then group=u32(fallback,8) end
@@ -91,33 +91,33 @@ function M.new(api, game, resolve)
         local layout = ({[1]={1097440,1253440,100},[2]={1253448,1409448,100},
             [3]={1409456,1487456,50}})[kind]
         if not layout then return nil,true end
-        local manager = ptr(game+0x277feb8)
+        local manager = ptr(game+0x347ce80)
         if index>=count(manager+layout[2],layout[3]) then return nil,true end
         local record = manager+layout[1]+index*1560
         if read(record+1456,1):byte()==0 then return nil,true end
         local advertised = read(record+944,512):match('^([^%z]+)%z')
         -- The native preview builder decodes this advertisement into the board
         -- descriptor and loads its canonical packet into the single preview slot.
-        if u32(read(board+4281196,4),0)~=0 then return nil,true end
-        local loaded = read(root+713296,512):match('^([^%z]+)%z')
+        if u32(read(board+4286668,4),0)~=0 then return nil,true end
+        local loaded = read(root+713400,512):match('^([^%z]+)%z')
         if not advertised or advertised~=loaded then return nil,true end
         return planet,true
     end
 
     function self:descriptor(screen)
-        local root = ptr(game + 0x276c078)
-        local controller = ptr(root + 0xae220)
-        local board = ptr(game + 0x277ff28)
-        local address = board + 0x415370
+        local root = ptr(game + 0x3326340)
+        local controller = ptr(root + 0xae288)
+        local board = ptr(game + 0x347cee8)
+        local address = board + 0x4168d0
         local preview_planet,hovered,operation_planet,operation_index
         if screen == 'briefing' then
-            local manager = ptr(game + 0x276cb80)
-            local n = count(manager + 26008, 1024)
+            local manager = ptr(game + 0x3326e68)
+            local n = count(manager + 26184, 1024)
             assert(n > 0, 'Briefing descriptor unavailable')
-            local rows = read(manager + 26016, n * 16)
+            local rows = read(manager + 26192, n * 16)
             local selected
             for i = 0, n - 1 do
-                if u32(rows, 16 * i + 8) == 233 then
+                if u32(rows, 16 * i + 8) == 235 then
                     assert(not selected, 'Ambiguous briefing owner')
                     selected = assert(api.pointer(rows, 16 * i))
                 end
@@ -152,15 +152,15 @@ function M.new(api, game, resolve)
     end
 
     local function settings(snapshot)
-        local b = read(game + 0x26d3560 + (snapshot.difficulty - 1) * 816, 816)
+        local b = read(game + 0x328d2a0 + (snapshot.difficulty - 1) * 816, 816)
         local start = ({[2]=276,[3]=372,[4]=468})[snapshot.faction]
         local fallback = ({[2]=564,[3]=600,[4]=636})[snapshot.faction]
-        local result = {draws=u32(b,272), candidates={}, blockers={}, fallback=u32(b,fallback+32)}
+        local result = {draws=u32(b,272), candidates={}, blockers={}, fallback=resolve.from_native(u32(b,fallback+32))}
         for i = 0, 7 do
             local at = start + i * 12
-            result.candidates[#result.candidates + 1] = {id=u32(b,at),weight=f32(b,at+4),
+            result.candidates[#result.candidates + 1] = {id=resolve.from_native(u32(b,at)),weight=f32(b,at+4),
                 only_when_empty=b:byte(at+9) ~= 0}
-            result.blockers[#result.blockers + 1] = u32(b,fallback+i*4)
+            result.blockers[#result.blockers + 1] = resolve.from_native(u32(b,fallback+i*4))
         end
         return result
     end
@@ -180,11 +180,11 @@ function M.new(api, game, resolve)
         local static = read(data + 280 * planet, 280)
         assert(u32(static,24) == snapshot.planet, 'Selected planet does not match this mission')
         local dynamic = read(data + 304 * planet + 286752, 304)
-        local session = ptr(game + 0x277ff30)
+        local session = ptr(game + 0x347cef0)
         local complete = true
         local gated = read(session+92102,1):byte() ~= 0 or read(root+4205,1):byte() ~= 0
             or read(root+4217,1):byte() ~= 0
-        local defs = ptr(game + 0x277fdd0)
+        local defs = ptr(game + 0x347cd98)
         local dn = count(defs+53248,1024)
         local rows = dn > 0 and read(defs,dn*52) or ''
         local by_id, by_hash = {}, {}
@@ -226,7 +226,7 @@ function M.new(api, game, resolve)
                 assert(u16(selected,16)==planet, 'Operation planet does not match this mission')
                 local category = u32(selected,28)
                 if selected:byte(53) ~= 0 and category < 14
-                    and read(game+0x272f820+168*category+9,1):byte() ~= 0 then
+                    and read(game+0x32e98e0+168*category+9,1):byte() ~= 0 then
                     local operation_id, template_id
                     for i = 0, count(data+155672,512)-1 do
                         local operation = read(data+143384+24*i,24)
@@ -246,7 +246,7 @@ function M.new(api, game, resolve)
                         end
                     end
                     if template_id then
-                        local header = read(board+0x1f73a8,24)
+                        local header = read(board+0x1f8908,24)
                         local values = api.pointer(header)
                         local total = u32(header,16)
                         assert(total <= 4096, 'Too many operation templates')
@@ -271,7 +271,7 @@ function M.new(api, game, resolve)
             end
         end
         local faction, region = u32(dynamic,36), u32(dynamic,64)
-        local globals = read(ptr(game+0x2770628),32*356)
+        local globals = read(ptr(game+0x346d518),32*356)
         for i = 0, 31 do
             local at = i*356
             local scope, value, filter = globals:byte(at+85), u32(globals,at+88), u32(globals,at+92)
@@ -281,7 +281,7 @@ function M.new(api, game, resolve)
                 local total = u32(globals,at+80)
                 assert(total <= 5, 'Too many global modifier entries')
                 for j = 0, total - 1 do
-                    if globals:byte(at+16*j+1) == 17 then resolve.add(initial,u32(globals,at+16*j+4)) end
+                    if globals:byte(at+16*j+1) == 17 then resolve.add(initial,resolve.from_native(u32(globals,at+16*j+4))) end
                 end
             end
         end
@@ -294,7 +294,7 @@ function M.new(api, game, resolve)
         local explicit = read(level+9160276,16)
         local n = u32(explicit,12)
         assert(n <= 3, 'Too many explicit tags')
-        for i = 0, n - 1 do resolve.add(initial,u32(explicit,4*i)) end
+        for i = 0, n - 1 do resolve.add(initial,resolve.from_native(u32(explicit,4*i))) end
         if api.pointer(read(controller,8)) and count(level+18510124,100000) ~= 0 then
             local selection = read(level+9017008,168)
             local index, variant = selection:byte(163), selection:byte(162)
@@ -306,13 +306,13 @@ function M.new(api, game, resolve)
                 else
                     address = ptr(owner)
                 end
-                if address then resolve.add(initial,u32(read(address+208,4),0)) end
+                if address then resolve.add(initial,resolve.from_native(u32(read(address+208,4),0))) end
             end
         end
     end
 
     local function excluded_by_config(tag_hash)
-        local manager = ptr(game+0x277fe28)
+        local manager = ptr(game+0x347cdf8)
         local key = resolve.exclusion_key(tag_hash)
         for _, offset in ipairs({73848,49232}) do
             local header = read(manager+offset,24)
@@ -338,11 +338,12 @@ function M.new(api, game, resolve)
     function self:sample(screen)
         local snapshot = self:descriptor(screen)
         if not snapshot then return nil end
-        local hash_bytes = read(game+0x1f38c90,31*4)
+        local hash_bytes = read(game+0x21e18e0,32*4)
         local hashes, hash_by_id = {}, {}
-        for i = 0, 30 do
+        for i = 0, 31 do
             local hash = u32(hash_bytes,i*4)
-            hashes[hash], hash_by_id[i] = i, hash
+            local tag = resolve.from_native(i)
+            hashes[hash], hash_by_id[tag] = tag, hash
         end
         local initial = {}
         snapshot.unresolved = {}
@@ -358,6 +359,13 @@ function M.new(api, game, resolve)
             snapshot.unresolved[#snapshot.unresolved+1] = 'Hovered mission differs from the loaded mission'
         end
         local tags = resolve.base(snapshot.seed,settings(snapshot),initial)
+        -- Native build 25327279 uses 896-byte mission records, a conditional
+        -- additional tag, and eight exclusions (formerly one).
+        local mission_config = read(game+0x3773420+896*snapshot.mission,896)
+        if mission_config:byte(0x34+1)==2 and
+            mission_config:sub(0x360+1,0x360+8)=='\073\120\130\127\209\044\124\133' then
+            resolve.add(tags,31)
+        end
         local disabled = {}
         for _, tag in ipairs(tags) do
             local ok, value = pcall(excluded_by_config,hash_by_id[tag])
@@ -366,8 +374,11 @@ function M.new(api, game, resolve)
                 snapshot.unresolved[#snapshot.unresolved+1] = tostring(value)
             end
         end
-        local exclusion = u32(read(game+0x2a762a4+872*snapshot.mission,4),0)
-        assert(exclusion <= 30, 'Unknown excluded tag')
+        local exclusion = {}
+        for i=0,7 do
+            local native=u32(mission_config,0x14+4*i)
+            if native~=0 then exclusion[resolve.from_native(native)]=true end
+        end
         snapshot.tags = resolve.filter(tags,exclusion,disabled)
         snapshot.complete = complete
         if read(snapshot.address,200) ~= snapshot.bytes or self:screen() ~= screen then return nil end

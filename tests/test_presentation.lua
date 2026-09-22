@@ -36,7 +36,7 @@ local function float(n) return ffi.string(ffi.new('float[1]',n),4) end
 local function qword(n) return ffi.string(ffi.new('uint64_t[1]',n),8) end
 local game=fixture.game
 -- Static body atlas resource identifier from the supported build.
-put(game+0x2a75d58,string.char(0x4b,0x93,0x9f,0xc7,0x91,0xb9,0xeb,0xd1))
+put(game+0x3772ee8,string.char(0x4b,0x93,0x9f,0xc7,0x91,0xb9,0xeb,0xd1))
 local reader=presentation.new(api,game)
 assert(mission.new(api,game,resolve):screen()=='briefing')
 local box=assert(reader:sample('briefing'))
@@ -44,15 +44,15 @@ assert(math.abs(box.x-512)<.01 and math.abs(box.y-894.1667)<.02)
 assert(math.abs(box.w-710.6667)<.02 and math.abs(box.scale-4/3)<.001)
 assert(box.font=='b56d2abac5d17df2' and box.material=='9f85b87d3ff20cbb')
 assert(box.atlas=='d1ebb991c79f934b')
-put(game+0x2a75d58,string.rep('\0',8))
+put(game+0x3772ee8,string.rep('\0',8))
 assert(not pcall(reader.sample,reader,'briefing'),'An unready atlas must not render solid glyph blocks')
-put(game+0x2a75d58,string.char(0x4b,0x93,0x9f,0xc7,0x91,0xb9,0xeb,0xd1))
-local manager=api.pointer(api.read(game+0x276cb80,8))
-local owner=api.pointer(api.read(manager+25104,8))
+put(game+0x3772ee8,string.char(0x4b,0x93,0x9f,0xc7,0x91,0xb9,0xeb,0xd1))
+local manager=api.pointer(api.read(game+0x3326e68,8))
+local owner=api.pointer(api.read(manager+25280,8))
 for _,entry in ipairs(transition.entry) do
     put(owner+8,word(entry.tab))
-    put(owner+31168,word(entry.flags))
-    put(owner+31168+84,float(entry.alpha))
+    put(owner+31232,word(entry.flags))
+    put(owner+31232+84,float(entry.alpha))
     local actual=reader:sample('briefing')
     assert((actual~=nil)==(entry.tab==0 and entry.alpha>=.995), 'Pod entry opacity gate regressed')
 end
@@ -62,15 +62,15 @@ assert(not reader:sample('briefing'),'Loadout must be hidden even with fully opa
 put(owner+8,word(3))
 assert(not reader:sample('briefing'),'Unknown tabs must be hidden')
 put(owner+8,word(0))
-put(owner+31168+84,float(0/0))
+put(owner+31232+84,float(0/0))
 assert(not reader:sample('briefing'),'Invalid opacity must hide')
-put(owner+31168+84,float(1))
-put(manager+25096,word(0))
+put(owner+31232+84,float(1))
+put(manager+25272,word(0))
 assert(not reader:sample('briefing'),'Stale subscriber pointer must not be followed')
-put(manager+25096,word(1))
-put(manager+25112,word(224))
+put(manager+25272,word(1))
+put(manager+25288,word(226))
 assert(not reader:sample('briefing'),'Reused component allocation must not be followed')
-put(manager+25048,word(1)..word(0)..qword(owner)..word(224)..word(0))
+put(manager+25224,word(1)..word(0)..qword(owner)..word(226)..word(0))
 put(owner+349072,transition.map)
 box=assert(reader:sample('map'))
 assert(box.x==512 and math.abs(box.y-768.8333)<.02 and math.abs(box.w-710.6667)<.02)
@@ -91,8 +91,8 @@ assert(not reader:sample('briefing'))
 local join=assert(loadfile(source..'/../tests/fixtures/presentation_join_left.lua'))()
 blocks,overrides=join.blocks,{}
 local join_reader=presentation.new(api,join.game)
-local join_manager=api.pointer(api.read(join.game+0x276cb80,8))
-local join_owner=api.pointer(api.read(join_manager+25056,8))
+local join_manager=api.pointer(api.read(join.game+0x3326e68,8))
+local join_owner=api.pointer(api.read(join_manager+25232,8))
 local positions=assert(loadfile(source..'/../tests/fixtures/presentation_join_positions.lua'))()
 put(join_owner+526048,positions[1])
 local join_box=assert(join_reader:sample('map'))
@@ -116,19 +116,19 @@ assert(join_reader:sample('map').y==710,'The left frame must still follow its ow
 put(join_owner+280528+84,float(.5))
 assert(not join_reader:sample('map'),'The planet frame must be fully visible before opening the strip')
 put(join_owner+280528+84,float(1))
-put(join_manager+25048,word(0))
+put(join_manager+25224,word(0))
 assert(not join_reader:sample('map'),'Stale map owner must not show a joinable forecast')
 local hidden=assert(loadfile(source..'/../tests/fixtures/presentation_join_hidden.lua'))()
 local fonts={}
-local material=api.pointer(api.read(join.game+0x2ac7058,8))
-for _,address in ipairs({join.game+0x2a750d8,join.game+0x2ac7058,join.game+0x2a75d58,material+24}) do
+local material=api.pointer(api.read(join.game+0x37c5478,8))
+for _,address in ipairs({join.game+0x3772268,join.game+0x37c5478,join.game+0x3772ee8,material+24}) do
     fonts[#fonts+1]={address=address,bytes=api.read(address,8)}
 end
 blocks,overrides=hidden.blocks,{}
 assert(hidden.game==join.game)
 for _,b in ipairs(fonts) do put(b.address,b.bytes) end
-local hidden_manager=api.pointer(api.read(hidden.game+0x276cb80,8))
-local hidden_owner=api.pointer(api.read(hidden_manager+25056,8))
+local hidden_manager=api.pointer(api.read(hidden.game+0x3326e68,8))
+local hidden_owner=api.pointer(api.read(hidden_manager+25232,8))
 local left_widget
 for _,b in ipairs(join.blocks) do if b.address==join_owner+280528 then left_widget=b.bytes end end
 put(hidden_owner+280528,assert(left_widget))

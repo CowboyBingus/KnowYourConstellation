@@ -71,7 +71,7 @@ def main():
         'description':summary + ' Client-side only. Requires Bingus Shared Loader v12 or newer. Spawns are not guaranteed.',
         'module':MODULE,'game_exe_sha256':EXE_SHA,'game_dll_sha256':GAME_DLL_SHA,
         'runtime_verified':runtime_verified,'client_only':True,'network_calls':False,'gameplay_memory_writes':False,
-        'requires':[{'name':'Bingus Shared Loader','revision':'loader-v14','api':1}],
+        'requires':[{'name':'Bingus Shared Loader','revision':'loader-v12','api':1}],
         'deployment_files':files,'files':{p:sha((ROOT/p).read_bytes()) for p in files.values()},
         'resource_sha256':sha(resource),'offline_tests':tests.strip()}
     if args.rows:

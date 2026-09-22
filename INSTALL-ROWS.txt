@@ -1,72 +1,18 @@
-TEST BUILD: mission-mode and centralized-log corrections. In-game validation pending.
+Know Your Constellation Rows v3.15
 
-Requires Bingus Shared Loader v14 for the shared log folder.
+Supports Helldivers 2 Steam build 25327279 / game 1.8.45850.0.
+Requires Bingus Shared Loader v16 or newer / API 1.
+
+1. Close Helldivers 2 and use one mod manager.
+2. Replace the previous package with Know-Your-Constellation-Rows-v3.15.zip.
+3. Enable this package and Bingus Shared Loader.
+4. With Arsenal's default priority, put the loader last (at the bottom).
+   With first-mod priority enabled, put the loader first.
+5. Purge / Deploy, then start the game normally.
+
+Enable either the scrolling layout or Rows, not both.
+
+To remove or change options, close the game, disable the package, and
+Purge / Deploy again. Keep the loader enabled while other mods need it.
 
 Logs: %LOCALAPPDATA%/CowboyBingus/Helldivers2/Logs
-
-
-
-Know Your Constellation Rows - v3.13
-
-
-
-Requires Bingus Shared Loader v14 or newer, installed separately.
-
-
-
-Import Know-Your-Constellation-Rows-v3.13.zip and Bingus-Shared-Loader-v14.zip
-
-into your mod manager. Disable the standalone scrolling forecast package,
-
-enable Rows and the shared loader, then Purge / Deploy.
-
-With default Arsenal priority, put the shared loader last.
-
-If using Vanilla Plus Megapack, give Rows priority over its bundled forecast.
-
-Both variants use the same module. Only the winning forecast resource runs.
-
-
-
-Each constellation and its units appear in a separate static row.
-
-Heavy enemies have their own row. Long lists wrap and the panel grows.
-
-The game font, colors, frame and visibility rules match the scrolling view.
-
-Tall reports that cannot fit below the native frame appear beside it.
-
-
-
-Only players with the mod see the forecast. It does not change spawns,
-
-difficulty, gameplay rules or network traffic.
-
-Forecasts are shown on hosted and joinable mission previews and briefing.
-
-They are hidden on loadout and when the corresponding preview is closed.
-
-Spawns are not guaranteed. Unavailable mission data is withheld.
-
-
-
-Supported game build: Steam build 24826606, executable 1.8.45317.0.
-
-The runtime checks the game and executable hashes and stops on a mismatch.
-
-Game updates require revalidation.
-
-
-
-Rows has passed offline layout and visibility tests and user verification
-
-in-game. The release preserves that verified runtime exactly.
-
-
-
-Uninstall: disable Rows, then Purge / Deploy.
-
-To return to scrolling, disable Rows and enable the original forecast.
-
-Logs: %LOCALAPPDATA%\CowboyBingus\Helldivers2\Logs
-Requires Bingus Shared Loader v14 or newer for this log folder.

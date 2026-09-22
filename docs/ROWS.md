@@ -17,7 +17,7 @@ Pending mission data clears the rows while retaining the frame and captions.
 Unhover, pod entry and loadout hide the whole panel immediately. Stable frames
 reuse retained drawing objects and cached text measurements.
 
-Install `Know-Your-Constellation-Rows-v3.12.zip` with Bingus Shared Loader v12 or
+Install `Know-Your-Constellation-Rows-v3.15.zip` with Bingus Shared Loader v16 or
 newer. Disable the standalone scrolling version before enabling Rows. With
 Vanilla Plus Megapack, give Rows priority over the bundled forecast. The
 packages have separate manager entries but share one runtime module, so only
@@ -27,9 +27,8 @@ Build with `python scripts/build.py --rows`. Outputs go into `build/rows` and
 the release directory. The build runs the shared tests, checks all 30 catalogue
 entries and heavy enemies across six resolutions, and exercises the real rows
 renderer with the installer through pending, briefing, loadout and client
-unhover transitions. It also recompiles the scrolling source and verifies that
-it still matches the tested v3.12 payload exactly.
+unhover transitions. It also recompiles the scrolling source and compares both variants while keeping their runtime verification separate.
 
-The alternate layout passed offline tests and user verification in-game.
-Both release variants enforce the hashes of their verified compiled payloads.
+The earlier layout passed user verification on the previous game build.
+The v3.15 UI repair passes current-build read-only capture tests; installed rendering verification is pending.
 Public package names use the parent release version, including the Rows variant.

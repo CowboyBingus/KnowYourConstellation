@@ -30,5 +30,6 @@ return {
     [27] = {'ILLUMINATE INVASION', 'Corrupted, Overseers and tripods'},
     [28] = {'ILLUMINATE HARVEST', 'Corrupted, beam units and tripods'},
     [29] = {'BODY HORROR', 'Corrupted and body horror variants'},
+    [31] = {'HORDE FORCES', 'Horde-only mission composition'},
     [30] = {'SEAF SUPPORT', 'Allied soldiers and specialists'},
 }

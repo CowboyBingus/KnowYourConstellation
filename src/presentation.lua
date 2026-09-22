@@ -32,9 +32,9 @@ function M.new(api,game)
     local self = {}
     function self:sample(screen)
         if screen ~= 'map' and screen ~= 'briefing' then return nil end
-        local manager = pointer(game+0x276cb80)
-        local registry = screen == 'map' and 25048 or 25096
-        local kind = screen == 'map' and 224 or 227
+        local manager = pointer(game+0x3326e68)
+        local registry = screen == 'map' and 25224 or 25272
+        local kind = screen == 'map' and 226 or 229
         -- These event registries have one inline subscriber. A zero count can
         -- leave a stale pointer behind, so never inspect it without the count.
         local entry = read(manager+registry,24)
@@ -57,7 +57,7 @@ function M.new(api,game)
             if sx < 0.3 or sx > 4 or math.abs(sx-sy)>0.01 or box.w<200 or box.h<40 then return nil end
             return box
         end
-        local box = rectangle(screen == 'map' and 349072 or 31168)
+        local box = rectangle(screen == 'map' and 349072 or 31232)
         if not box and screen=='map' then
             box = rectangle(280528)
             if box then
@@ -74,9 +74,9 @@ function M.new(api,game)
         if not box then return nil end
         -- The active locale's body face and its normal material. The native
         -- font initializer at 0xf553c0 populates these same rendering tables.
-        box.font = hash(game+0x2a750d8)
-        box.material = hash(pointer(game+0x2ac7058)+24)
-        box.atlas = hash(game+0x2a75d58)
+        box.font = hash(game+0x3772268)
+        box.material = hash(pointer(game+0x37c5478)+24)
+        box.atlas = hash(game+0x3772ee8)
         -- No guessed coordinates if the native panel is absent or mid-layout.
         return box
     end

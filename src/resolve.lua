@@ -13,7 +13,7 @@ end
 
 function M.add(tags, tag)
     if not tag or tag == 0 then return end
-    assert(tag >= 1 and tag <= 30, 'Unknown enemy tag')
+    assert(tag >= 1 and tag <= 31, 'Unknown enemy tag')
     for _, value in ipairs(tags) do if value == tag then return end end
     assert(#tags < 16, 'Too many enemy tags')
     tags[#tags + 1] = tag
@@ -68,10 +68,17 @@ function M.exclusion_key(hash)
     return value
 end
 
+-- Keep authored catalogue IDs stable after native tag 1 was inserted in build 25327279.
+function M.from_native(tag)
+    assert(tag >= 0 and tag <= 31, 'Unknown native enemy tag')
+    if tag == 1 then return 31 end
+    return tag > 1 and tag - 1 or 0
+end
+
 function M.filter(tags, excluded, disabled)
     local result = {}
     for _, tag in ipairs(tags) do
-        if tag ~= excluded and not disabled[tag] then M.add(result, tag) end
+        if not (type(excluded)=='table' and excluded[tag] or tag==excluded) and not disabled[tag] then M.add(result, tag) end
     end
     return result
 end

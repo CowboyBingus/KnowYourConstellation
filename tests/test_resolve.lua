@@ -24,7 +24,7 @@ local filtered = resolve.filter({1,11,9},1,{[9]=true})
 assert(#filtered == 1 and filtered[1] == 11)
 assert(not pcall(resolve.base,1,{draws=17,candidates={},blockers={},fallback=0},{}))
 for id, entry in pairs(catalogue) do
-    assert(id >= 1 and id <= 30)
+    assert(id >= 1 and id <= 31)
     model.ascii(entry[1])
     model.ascii(entry[2])
 end
@@ -40,3 +40,7 @@ local unavailable=model.make({key='pending',screen='map',difficulty=1,tags={},co
 assert(unavailable.marquee:find('COMPOSITION UNAVAILABLE',1,true),
     'Unresolved data must not be presented as a standard composition')
 print('PASS: recorded seed predictions, fallback, exclusions, modifier display and ASCII text')
+assert(resolve.from_native(0)==0 and resolve.from_native(1)==31)
+for id=2,31 do assert(resolve.from_native(id)==id-1) end
+assert(not pcall(resolve.from_native,32))
+assert(table.concat(resolve.filter({1,11,9},{[1]=true,[11]=true},{}),',')=='9')
