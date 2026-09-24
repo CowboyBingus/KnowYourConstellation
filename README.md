@@ -1,5 +1,6 @@
-The UI repair updates the screen stack, screen IDs, panel registries and briefing panel offset. Live read-only checks resolve the highlighted mission and forecast panel on the map and briefing. The forecast intentionally hides while choosing loadout equipment. Rendering the installed repair still needs in-game confirmation.
+> Current local compatibility candidate for Steam build 25480438 / EXE 1.8.46015.0. Offline checks passed; live gameplay verification is pending.
 
+The UI repair updates the screen stack, screen IDs, panel registries and briefing panel offset. Live read-only checks resolve the highlighted mission and forecast panel on the map and briefing. The forecast intentionally hides while choosing loadout equipment. Rendering the installed repair still needs in-game confirmation.
 
 ![Know Your Constellation](assets/banner.png)
 
@@ -15,4 +16,4 @@ Reveals mission constellations and enemy forecasts on the war table and briefing
 - Forecasts describe the mission's composition and eligible enemies. Individual spawns are not guaranteed.
 - The optional [Rows version](docs/ROWS.md) shows the same forecast in static rows so every section is visible at once. Choose one version from the [v3.12 release](https://github.com/CowboyBingus/KnowYourConstellation/releases/tag/v3.12).
 
-Current version: **v3.15**, for game build **25327279**. See [changes](CHANGELOG.md) and [validation coverage](docs/MIGRATION_VALIDATION.md).
+Current version: **v3.16**, for game build **25480438**. See [changes](CHANGELOG.md) and [validation coverage](docs/MIGRATION_VALIDATION.md).

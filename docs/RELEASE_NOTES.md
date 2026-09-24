@@ -1,3 +1,3 @@
-- Update compatibility for game build 25327279.
-- Restore enemy forecasts on mission previews and briefing screens.
-- Refresh mission rules in both scrolling and Rows layouts.
+- Update the relocated mission-tag table for Steam build 25480438.
+- Keep both scrolling and Rows forecast layouts.
+- Offline builds and package checks pass; live gameplay validation remains pending.

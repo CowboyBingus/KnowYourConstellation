@@ -1,3 +1,9 @@
+# v3.16
+
+- Update the relocated mission-tag table for Steam build 25480438.
+- Keep both scrolling and Rows forecast layouts.
+- Offline builds and package checks pass; live gameplay validation remains pending.
+
 # v3.15
 
 - Update compatibility for game build 25327279.

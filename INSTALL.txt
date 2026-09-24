@@ -1,18 +1,56 @@
-Know Your Constellation v3.15
+Current local compatibility candidate for Steam build 25480438 / EXE 1.8.46015.0. Offline checks passed; live gameplay verification is pending.
 
-Supports Helldivers 2 Steam build 25327279 / game 1.8.45850.0.
-Requires Bingus Shared Loader v16 or newer / API 1.
+The UI repair updates the screen stack, screen IDs, panel registries and briefing panel offset. Live read-only checks resolve the highlighted mission and forecast panel on the map and briefing. The forecast intentionally hides while choosing loadout equipment. Rendering the installed repair still needs in-game confirmation.
 
-1. Close Helldivers 2 and use one mod manager.
-2. Replace the previous package with Know-Your-Constellation-v3.15.zip.
-3. Enable this package and Bingus Shared Loader.
-4. With Arsenal's default priority, put the loader last (at the bottom).
-   With first-mod priority enabled, put the loader first.
-5. Purge / Deploy, then start the game normally.
+TEST BUILD: mission-mode and centralized-log corrections. In-game validation pending.
 
-Enable either the scrolling layout or Rows, not both.
-
-To remove or change options, close the game, disable the package, and
-Purge / Deploy again. Keep the loader enabled while other mods need it.
+Requires Bingus Shared Loader v16 for the shared log folder.
 
 Logs: %LOCALAPPDATA%/CowboyBingus/Helldivers2/Logs
+
+
+
+Know Your Constellation v3.16
+
+
+
+Requires Bingus Shared Loader v17 or newer, installed separately.
+
+
+
+Import Know-Your-Constellation-v3.16.zip and Bingus-Shared-Loader-v17.zip
+
+into your mod manager. Enable both, then Purge / Deploy.
+
+With default Arsenal priority, put the shared loader last.
+
+Disable the previous Enemy Intelligence package if it remains listed.
+
+The stable manager GUID and internal module name preserve one-copy startup.
+
+
+
+Only players with the mod see the forecast. It does not change spawns,
+
+difficulty, gameplay rules or network traffic.
+
+Forecasts are shown on hosted and joinable mission previews and briefing.
+
+They are hidden on loadout and when the corresponding preview is closed.
+
+Spawns are not guaranteed. Unavailable mission data is withheld.
+
+
+
+Supported game build: Steam build 25480438, executable 1.8.46015.0.
+
+The runtime checks the game and executable hashes and stops on a mismatch.
+
+Game updates require revalidation.
+
+
+
+Uninstall: disable this mod, then Purge / Deploy.
+
+Logs: %LOCALAPPDATA%\CowboyBingus\Helldivers2\Logs
+Requires Bingus Shared Loader v17 or newer for this log folder.
