@@ -13,6 +13,8 @@ from archive import GAME, LUA, EXE_SHA, GAME_DLL_SHA, ARCHIVE, sha, make_archive
 from module import MODULE, REVISION, ROWS_REVISION, TESTED_RESOURCE_SHA, TESTED_ROWS_RESOURCE_SHA, wrapper
 from package import package_release
 
+VERSION = 'v3.16.1'  # package version; the module revisions are unchanged
+
 ROOT = Path(__file__).resolve().parents[1]
 GUID = '9a9c8423-8f3e-4b7b-9a16-7d0b78ff1a18'
 ROWS_GUID = '3b68356c-b11c-431a-aa5a-d7b1ca50b189'
@@ -68,18 +70,19 @@ def main():
     guid = ROWS_GUID if args.rows else GUID
     summary = SUMMARY + (' Displays the complete forecast in static rows. Enable only one forecast variant.' if args.rows else '')
     report = {'name':name,'slug':name.replace(' ',''),'revision':revision,'guid':guid,
-        'description':summary + ' Client-side only. Requires Bingus Shared Loader v12 or newer. Spawns are not guaranteed.',
+        'description':summary + ' Client-side only. Requires Bingus Shared Loader v18. Spawns are not guaranteed.',
         'module':MODULE,'game_exe_sha256':EXE_SHA,'game_dll_sha256':GAME_DLL_SHA,
         'runtime_verified':runtime_verified,'client_only':True,'network_calls':False,'gameplay_memory_writes':False,
         'requires':[{'name':'Bingus Shared Loader','revision':'loader-v12','api':1}],
         'deployment_files':files,'files':{p:sha((ROOT/p).read_bytes()) for p in files.values()},
         'resource_sha256':sha(resource),'offline_tests':tests.strip()}
+    report['version'] = VERSION
     if args.rows:
-        report.update(version=REVISION.removeprefix('v'), install_instructions='INSTALL-ROWS.txt')
+        report.update(install_instructions='INSTALL-ROWS.txt')
     release = package_release(ROOT,build,report)
     with zipfile.ZipFile(release) as package:
         manifest = json.loads(package.read('manifest.json'))
-        assert manifest['Name']==name+' - '+REVISION and manifest['Guid']==guid
+        assert manifest['Name']==name+' - '+VERSION and manifest['Guid']==guid
         assert manifest['IconPath']==manifest['Options'][0]['Image']=='thumbnail.png'
         archive = package.read('data/'+ARCHIVE)
         entry = struct.unpack_from('<7Q6I',archive,104)

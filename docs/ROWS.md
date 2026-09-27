@@ -17,8 +17,8 @@ Pending mission data clears the rows while retaining the frame and captions.
 Unhover, pod entry and loadout hide the whole panel immediately. Stable frames
 reuse retained drawing objects and cached text measurements.
 
-Install `Know-Your-Constellation-Rows-v3.15.zip` with Bingus Shared Loader v16 or
-newer. Disable the standalone scrolling version before enabling Rows. With
+Install `Know-Your-Constellation-Rows-v3.16.1.zip` with Bingus Shared Loader v18.
+Disable the standalone scrolling version before enabling Rows. With
 Vanilla Plus Megapack, give Rows priority over the bundled forecast. The
 packages have separate manager entries but share one runtime module, so only
 the winning presentation loads. The original scrolling download is unchanged.
@@ -29,6 +29,7 @@ entries and heavy enemies across six resolutions, and exercises the real rows
 renderer with the installer through pending, briefing, loadout and client
 unhover transitions. It also recompiles the scrolling source and compares both variants while keeping their runtime verification separate.
 
-The earlier layout passed user verification on the previous game build.
-The v3.15 UI repair passes current-build read-only capture tests; installed rendering verification is pending.
+The layout passed user verification in game with v3.12. On Steam build 25480438 the
+mod loads in live play and runs its forecast on the galactic map; the layout has
+not been confirmed on screen on this build.
 Public package names use the parent release version, including the Rows variant.

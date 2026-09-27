@@ -1,6 +1,4 @@
-> Current local compatibility candidate for Steam build 25480438 / EXE 1.8.46015.0. Offline checks passed; live gameplay verification is pending.
-
-The UI repair updates the screen stack, screen IDs, panel registries and briefing panel offset. Live read-only checks resolve the highlighted mission and forecast panel on the map and briefing. The forecast intentionally hides while choosing loadout equipment. Rendering the installed repair still needs in-game confirmation.
+> Release **v3.16.1** for Steam build 25480438 / EXE 1.8.46015.0. Offline checks passed; the mod loads in live play and runs its forecast on the galactic map. Both layouts were last confirmed on screen with v3.12.
 
 ![Know Your Constellation](assets/banner.png)
 
@@ -14,6 +12,8 @@ Reveals mission constellations and enemy forecasts on the war table and briefing
 - Uses the game's body font and matching frame style. The briefing forecast stays hidden during pod entry and on the loadout screen.
 - Runs only on your client. Other players need their own copy to see it, and enemy spawns and gameplay remain unchanged.
 - Forecasts describe the mission's composition and eligible enemies. Individual spawns are not guaranteed.
-- The optional [Rows version](docs/ROWS.md) shows the same forecast in static rows so every section is visible at once. Choose one version from the [v3.12 release](https://github.com/CowboyBingus/KnowYourConstellation/releases/tag/v3.12).
+- The optional [Rows version](docs/ROWS.md) shows the same forecast in static rows so every section is visible at once. Choose one version from the [latest release](https://github.com/CowboyBingus/KnowYourConstellation/releases/latest).
 
-Current version: **v3.16**, for game build **25480438**. See [changes](CHANGELOG.md) and [validation coverage](docs/MIGRATION_VALIDATION.md).
+**Install:** close the game, import `Know-Your-Constellation-v3.16.1.zip` (or the Rows ZIP) and `Bingus-Shared-Loader-v18.zip` into Arsenal or HD2MM, enable both and Purge / Deploy. With Arsenal's default priority, put the loader last. [Bingus Shared Loader](https://github.com/CowboyBingus/BingusSharedLoader/releases/latest) is a separate required download.
+
+Current version: **v3.16.1**, for game build **25480438**. See [changes](CHANGELOG.md) and [validation coverage](docs/MIGRATION_VALIDATION.md).

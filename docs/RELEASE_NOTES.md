@@ -1,3 +1,3 @@
-- Update the relocated mission-tag table for Steam build 25480438.
-- Keep both scrolling and Rows forecast layouts.
-- Offline builds and package checks pass; live gameplay validation remains pending.
+- Documentation-only release: both packages are identical to v3.16 (same compiled resource).
+- Rewrites the install notes packaged with both packages and the README status: one current status line instead of the compatibility-candidate and test-build notes left from the game-build update. The mod loads in live play and runs its forecast on the galactic map.
+- Lists one loader requirement, Bingus Shared Loader v18.
