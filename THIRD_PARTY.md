@@ -3,6 +3,9 @@
 LuaJIT (MIT) compiles the Lua sources and runs the offline tests. The required
 commit is pinned in dependencies.json. No compiler binaries are bundled.
 
+Enemy names and size classes follow the community Helldivers Wiki
+(https://helldivers.wiki.gg). No wiki text or images are included.
+
 The runtime references the installed game's font and rendering resources.
 No extracted font files, game executables or raw memory captures are included
 in this source project. No repository-wide license has been selected.

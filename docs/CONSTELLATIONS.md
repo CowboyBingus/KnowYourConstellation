@@ -1,83 +1,94 @@
-# Know Your Constellation - composition reference
+# How the forecast is built
 
-Based on the game tables extracted on 16 September 2026 from Steam build 24826606, executable 1.8.45317.0. The extraction contains 30 named non-none tags, 177 unit-definition rows, 460 group rows and 63 replacement rules.
+Know Your Constellation v4.0 reads the enemy spawn tables in the game module of Steam build 25480438 (executable 1.8.46015.0) and replays their rules for the highlighted mission. Enemy names and size classes follow the [Helldivers Wiki](https://helldivers.wiki.gg).
 
-A base constellation selects a composition. Modifiers can add units or replace units within that composition. The tables list characteristic associations and replacement results, rather than an exhaustive final mission roster. Shared units, difficulty, mission scripts, objectives and additional modifiers still apply. Spawns are not guaranteed.
+## Inputs
 
-Readable constellation names match the mod. Internal tags identify the exact game entries. Community aliases such as Hive Guard Hell and Jumping Bugs are inferred equivalents, not native names. Unconfirmed unit names are retained as descriptive asset names.
+- **Enemy tags.** Every mission resolves a list of tags before deployment: a base constellation chosen from the mission seed, plus subfactions, strains and operation modifiers from the campaign. The mod resolves the same list the game does; see [runtime design](TECHNICAL.md).
+- **Difficulty.** Unit and group weights differ per difficulty.
+- **Spawn-weight modifiers.** Campaign modifiers and war effects can scale the weight of every group containing a given enemy family. They are applied when the game reports them for the hovered planet.
 
-## Terminids
+## Where enemies come from
 
-| Constellation | Kind and native tag | Potential composition | Native rules and limits |
-| --- | --- | --- | --- |
-| Bile Bugs | Base, `BugAcid` | Bile Spewers and their tier-2 form, Spitters, Bile/acid Warriors, Warrior and Commander groups | Scavenger resources become Spitters from D2. The tier-2 Warrior resource becomes an acid Warrior from D3. Bile Titans and Acid Chargers are shared entries, not exclusive to this constellation. |
-| Armored Bugs / Hive Guard Hell | Base, `BugArmored` | Hive Guard / `warrior_plus` entries, Warriors, Scavengers, Chargers, tier-2 Chargers and Acid Chargers | Explicit armored-unit and Charger-group associations. No tag-specific replacement rule. |
-| Hunter Swarms / Jumping Bugs | Base, `BugPredators` | Hunters and Pouncers | Scavenger resources become the predator/Pouncer variant from D2. |
-| Light Bugs | Base, `BugFodder` | Scavengers, Warriors, Hive Guard / `warrior_plus` entries, Brood Commander-type units and their higher-tier form | Associated light and Commander groups. No exclusive unit resource or replacement rule. |
-| Bug Nursery | Base, `BugCrawlers` | Nursing Spewers, Scavengers, Warriors, Hive Guard / `warrior_plus` entries and Commander-type units | Nursing Spewers also have an untagged definition, so they are not proven exclusive to this constellation. |
-| Mixed Terminids | Base, `BugBalanced` | Hunters, Warriors, Hive Guard / `warrior_plus` entries and Commander-type units, alongside eligible shared forces | Two explicitly tagged groups. No exclusive unit or replacement rule. |
-| Super Predators | Modifier, `GM_BugSuperPredators` | Tier-3 Hunters, Scavenger groups and one unresolved special resource | Ordinary Hunter resources become tier-3 Hunters from D2. The extra unnamed resource is not assigned a guessed display name. |
-| Gloom Variants | Modifier, `GM_BugGloom` | Gloom Scavengers, Gloom Warriors, Gloom Hunters and Gloom Bile Titans | Covered light units are replaced from D2. The ordinary Titan-to-Gloom-Titan replacement begins at D5, subject to group eligibility. |
-| Burrowers | Modifier, `GM_BugBurrowers` | Burrowing Warrior, Spewer and Charger variants | Covered Warrior, Charger, Nursing Spewer and Bile Spewer resources are replaced from D6. These are the Rupture-style variants described in official enemy material. |
-| Dragonroach Activity | Modifier, `GM_BugDragon_Traveler` | Dragonroaches and the Charger replacement entry | Enables the dragon resource and tagged groups. Decoded dragon groups begin at D5. Separately replaces the ordinary Bile Titan resource with a Charger from D2 in this path. Other replacement priorities can affect the outcome. |
+Each faction has one table of unit rows, groups and replacement rules. Groups sit in pools, each used by a different spawner:
 
-The six base constellations above are weighted candidates at D2-D10. D1 has no random Terminid base candidate in the captured settings. This does not mean an empty enemy roster.
-
-Bile Titans, Chargers, Acid Chargers, Impalers and other units also have definitions without a constellation requirement. A shared definition alone does not authorize a spawn in every mission. For example, ordinary Titan groups in the mod's decoded heavy-forecast pools start at D6, but objective-specific or scripted spawn paths can differ.
-
-## Automatons
-
-| Constellation | Kind and native tag | Potential composition | Native rules and limits |
-| --- | --- | --- | --- |
-| Assault Forces | Base, `BotAssault` | Melee and jump-melee infantry, Berserkers, assault lieutenants, standard/heavy/rocket soldiers and assault walkers | Covered heavy-cannon, autocannon and rocket tank resources become the assault walker from D6. Two associated infantry resource names remain unresolved. |
-| Phalanx Forces | Base, `BotPhalanx` | Regular and melee infantry, commanders, standard/heavy/rocket soldiers and suppressor lieutenants | Explicit heavy-weapon and suppressor associations. No replacement rule. Some associated infantry names remain unresolved. |
-| Artillery Forces | Base, `BotArtillery` | Rocket soldiers, other soldier variants, infantry, commanders, suppressor lieutenants and assault walkers | Covered tank variants become the assault walker from D6. The label is not evidence that every artillery unit must spawn. |
-| Armored Column | Base, `BotPanzer` | Scout walkers, heavy-cannon/autocannon/rocket tanks, spawner walkers and supporting infantry | Explicit walker and tank group associations. No tag-specific replacement rule. Several associated resources remain unnamed. |
-| Mixed Automatons | Base, `BotBalanced` | Eligible shared Automaton infantry, soldiers, lieutenants, walkers and tanks | Selectable base tag with no exclusive unit, group or replacement records. |
-| Jump Assault | Modifier, `GM_BotAssault` | Jump infantry, jump-melee infantry, jump commanders, jump-pack soldiers, modified lieutenant variants and assault walkers | Replaces covered infantry and soldier resources from D1. Covered tanks become assault walkers from D6. Several replacement targets remain unnamed. |
-| Cyborg Forces | Modifier, `GM_BotCyborgs` | Cyborg elite and rusher variants, including female variants, siege engines and supporting Automaton infantry/soldiers | Scout-walker resources are replaced by Cyborg elites. An additional walker resource becomes a rusher. Spawner and jammer-spawner walkers become siege engines from D7. |
-| Ivory Legion | Modifier, `GM_IvoryLegion` | Ivory infantry, flamers, standard/heavy/rocket/shotgun soldiers and Ivory lieutenant variants | Replaces covered infantry, soldiers and lieutenants. Melee infantry become flamers, and Berserkers become shotgun soldiers. Several variant resource names remain unresolved. |
-
-The five Automaton base constellations are weighted candidates at D2-D10. D1 has no random Automaton base candidate in these settings. Gunships and other units also have untagged definitions, with their actual use controlled by additional conditions.
-
-## Illuminate
-
-| Constellation | Kind and native tag | Potential composition | Native rules and limits |
-| --- | --- | --- | --- |
-| Illuminate Invasion | Default, `GM_IlluminateInvasion` | Corrupted variants, staff units, jet champions, beam champions, observers, tripods, `meatglue` units and attack ships | Fallback composition when Engineers, Invasion, Harvest and Body Horror are all absent. These are native asset descriptions, not newly assigned official unit names. |
-| Illuminate Engineers | Modifier, `GM_IlluminateEngineers` | Staff units, jet champions, observers, tripods, melee/ranged exomechs and two unnamed resources | The beam-champion resource becomes a jet champion. |
-| Illuminate Harvest | Modifier, `GM_IlluminateHarvest` | Corrupted variants, staff units, beam champions, observers, tripods and `meatglue` units | Jet champion has a priority-2 replacement to beam champion from D1 and a priority-1 replacement to `meatglue` from D5. When both rules apply directly, the higher-priority beam rule wins. These are not two guaranteed replacements. |
-| Body Horror | Modifier, `GM_IlluminateBodyHorror` | Corrupted variants, `meatglue`, `bodyhorror_helmetguy` and `bodyhorror_bladed` | Direct unit and group associations. No replacement rule was found for this tag. |
-
-No weighted random Illuminate base candidates appear at D1-D10 in these settings. Invasion is a fallback rather than a random base draw. Corrupted, observer and tripod are internal family descriptions corresponding broadly to the Voteless, Watcher and Harvester roles. Exact unresolved variants retain their asset labels.
-
-## Tags present but composition unresolved
-
-| Faction | Mod label and native tag | What the extraction establishes |
+| Pool | Used for | In the forecast |
 | --- | --- | --- |
-| Terminids | Flyer Composition, `BugFlyers` | Tag exists, but it is absent from the random base candidates and has no direct unit/group/replacement association here. It is not evidence of Dragonroach activity. |
-| Terminids | Shrieker Modifier, `GM_BugShrieker_Traveler` | Tag exists, but its activation-to-unit mapping is unresolved. A separate ordinary Shrieker resource exists. |
-| Terminids | Hive Lord Modifier, `GM_BugHiveLord` | Tag exists, but its activation-to-unit mapping is unresolved. A separate Hive Lord resource exists. |
-| Automatons | Air Composition, `BotAir` | Tag exists, but it is absent from the random base candidates and has no direct association here. |
-| Automatons | Gunship Modifier, `GM_BotGunships_Traveler` | Tag exists, but its activation-to-unit mapping is unresolved. Gunships have a separate untagged definition. |
-| Illuminate | Illuminate Stragglers, `IlluminateStraggler` | Tag exists without a direct association here. It is not the captured build's default Illuminate composition. |
-| Illuminate | War Machine Modifier, `GM_IlluminateWarmachine_Traveler` | Tag exists, but its activation-to-unit mapping is unresolved. A separate Illuminate war-machine definition exists. |
+| Patrols | Roaming patrols; each patrol type (default, horde, harvest, observer) runs on its own timer | Listed and weighted |
+| Reinforcements | Bug breaches, bot drops, Illuminate warp-ins | Listed and weighted |
+| Garrisons | Groups guarding outposts and points of interest | Listed and weighted |
+| Border travellers | Flyers crossing the map: roving Shriekers, Gunship patrols, Leviathans, Dragonroaches | Only when the mission carries the matching modifier |
+| Air support | Illuminate Stingrays | Invasion Fleet only |
+| Convoys, stragglers | Objective convoys; special modes | Not forecast |
 
-An unresolved association is not proof that the tag is unused by every game system.
+A group is possible when its difficulty range, player range and required tags match and its weight is above zero. Every member of the group needs at least one possible unit, otherwise the whole group is dropped. Each unit then passes through the replacement rules: the highest-priority matching rule wins, and chained replacements may not lower the priority.
 
-## Shared friendly-force modifier
+Commanders' summons are listed with them: Brood Commanders call Warriors, and Alpha Commanders call Alpha Warriors.
 
-| Entry | Native tag | Potential composition |
+## The spawn-rate meter
+
+Large and massive enemies (wiki size classes) get a ten-bar meter; small and medium enemies are listed most common first.
+
+The meter shows each enemy's share of spawned enemies, averaged over patrols, reinforcements and garrisons. Ten bars means about one enemy in six; every 1.5 bars fewer halves the share; one bar marks a rare enemy. Border travellers count as one more patrol stream, and Illuminate air support as a quarter of one, because its timer is three to four times longer.
+
+## What each tag changes
+
+Numbers in brackets are the difficulty from which a rule applies (1 Trivial ... 10 Super Helldive).
+
+### Terminids
+
+| Shown as | Native tag | Effect |
 | --- | --- | --- |
-| SEAF Support | `GM_SEAF` | SEAF soldier, leader, specialist and medic variants. This is a friendly-force modifier, not an enemy constellation. |
+| Bile Bugs | `BugAcid` | Bile Spewer groups; Scavengers become Bile Spitters; Warriors become Bile Warriors |
+| Armored Bugs | `BugArmored` | More Hive Guard and Charger groups |
+| Hunter Swarms | `BugPredators` | More Hunter groups; Scavengers become Pouncers |
+| Light Bugs | `BugFodder` | More Warrior and Brood or Alpha Commander groups |
+| Bug Nursery | `BugCrawlers` | Nursing Spewer groups |
+| Balanced Terminids | `BugBalanced` | Mixed Hunter, Warrior and Commander groups |
+| Predator Strain | `GM_BugSuperPredators` | Hunters become Predator Hunters; Predator Stalkers (4) |
+| Spore Burst Strain | `GM_BugGloom` | Scavengers, Warriors and Hunters become Spore Burst variants; Bile Titans become Spore Burst Bile Titans (5) |
+| Rupture Strain | `GM_BugBurrowers` | Warriors, Nursing Spewers, Chargers and some Bile Spewers become Rupture variants (6) |
+| Dragonroach Activity | `GM_BugDragon_Traveler` | Dragonroaches (5); Bile Titans become Chargers, except under the Spore Burst Strain |
+| Roving Shriekers | `GM_BugShrieker_Traveler` | Shrieker patrols (inferred from the tag name and the wiki's operation modifier) |
+| Hive World | `GM_BugHiveLord` | Hive Lord (7) |
+| Horde | `HordeOnly` | Extra Bile Titan, Charger, Impaler and Shrieker groups |
 
-## Evidence and scope
+Brood Commanders become Alpha Commanders from 8, and Chargers share their slots with Charger Behemoths and Spore Chargers from 7.
 
-- Composition associations come from the extracted unit, group and replacement tables, not from the short marquee descriptions or community frequency claims.
-- The game.dll SHA-256 is `CC75948D90FDFDE259DCB519E9933DB7FFA3CCB281CE4FB89E6B1B011557470C`.
-- Some asset names are unresolved. The table does not invent display names for those resources.
-- Replacement sources are not treated as guaranteed members of the resulting roster. Multiple modifiers can compete or chain.
-- No universal "spawns more" or "spawns less" ranking is asserted. Those require the relevant group weights, mission conditions and difficulty.
-- Coverage is complete for the 30 named tags in this extraction. It is not a claim that all spawn systems, objective scripts or the undecoded table sections have been reconstructed.
+### Automatons
 
-Official naming cross-check: the [PlayStation enemy guide](https://www.playstation.com/en-us/games/helldivers-2/#know-your-enemy) documents Dragonroach, Rupture Charger, Rupture Warrior, Rupture Spewer, Voteless, Watcher and Harvester. It does not document the internal constellation-to-resource relationships. The descriptive asset-to-role correspondences above are interpretations of the local data.
+| Shown as | Native tag | Effect |
+| --- | --- | --- |
+| Assault Forces | `BotAssault` | Assault Raider, Brawler and Berserker groups; tanks become War Striders (6) |
+| Phalanx Forces | `BotPhalanx` | More MG Raiders and Heavy Devastators |
+| Artillery Forces | `BotArtillery` | More Rocket Raiders and Rocket Devastators; tanks become War Striders (6) |
+| Armored Column | `BotPanzer` | Scout Strider and tank groups |
+| Balanced Automatons | `BotBalanced` | Mixed groups |
+| Jet Brigade | `GM_BotAssault` | Troopers (from 3), Marauders, MG Raiders, Commissars, Devastators and Hulks become Jet Brigade variants; Brawlers become Assault Raiders; tanks become War Striders (6) |
+| Incineration Corps | `GM_IvoryLegion` | Brawlers become Pyro Troopers, Berserkers become Conflagration Devastators, Heavy Devastators become Incendiary MG Devastators, Rocket Raiders become Incendiary Rocket Raiders, Hulk Bruisers become Hulk Firebombers |
+| Cyborg Legion | `GM_BotCyborgs` | Scout Striders become Agitators and Reinforced Scout Striders become Radicals; Factory Striders become Vox Engines (7) |
+| Gunship Patrols | `GM_BotGunships_Traveler` | Gunship patrols (inferred from the tag name and the wiki's operation modifier) |
+
+War Striders never appear together with tanks: wherever they exist, every tank slot has become a War Strider.
+
+### Illuminate
+
+| Shown as | Native tag | Effect |
+| --- | --- | --- |
+| Invasion Fleet | `GM_IlluminateInvasion` | Voteless, Overseers of every kind, Watchers, Harvesters, Fleshmobs and Stingrays |
+| Appropriators | `GM_IlluminateEngineers` | Veracitors, Gatekeepers and Obtruders; no Voteless or Fleshmobs; Crescent Overseers become Elevated Overseers |
+| Mindless Masses | `GM_IlluminateHarvest` | Voteless and Fleshmob hordes; Elevated Overseers become Crescent Overseers |
+| Vote Snatchers | `GM_IlluminateBodyHorror` | Only Wretches, Crushers, Voteless and Fleshmobs |
+| Leviathan Blockade | `GM_IlluminateWarmachine_Traveler` | Leviathans (inferred from the tag name and the wiki's operation modifier) |
+
+`SEAF Support` (`GM_SEAF`) adds friendly SEAF squads and is shown in the headline only.
+
+## Not forecast
+
+- Enemies from map features: Stalker lairs, Shrieker nests, Gunship facilities, fabricators and other spawners.
+- Objective-specific enemies, such as Eliminate targets, convoy Factory Striders and captive bugs.
+- Mission-type exclusions that live outside the spawn tables. The wiki reports, for example, that War Striders skip some mission types outside Metropolis biomes.
+
+Two garrison groups that this build raised from weight 0 to 0.01 (Nursing Spewers and an unidentified Charger variant) are treated as disabled; the wiki does not report those enemies there.
+
+Spawns are never guaranteed: the forecast lists what the mission's rules allow and how they weight it, not what will appear.

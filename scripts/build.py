@@ -10,15 +10,17 @@ import zipfile
 
 sys.dont_write_bytecode = True
 from archive import GAME, LUA, EXE_SHA, GAME_DLL_SHA, ARCHIVE, sha, make_archive, resource_hash
-from module import MODULE, REVISION, ROWS_REVISION, TESTED_RESOURCE_SHA, TESTED_ROWS_RESOURCE_SHA, wrapper
+from module import MODULE, REVISION, TESTED_RESOURCE_SHA, locale_files, wrapper
 from package import package_release
+import translations
 
-VERSION = 'v3.16.1'  # package version; the module revisions are unchanged
+VERSION = 'v4.0'
 
 ROOT = Path(__file__).resolve().parents[1]
 GUID = '9a9c8423-8f3e-4b7b-9a16-7d0b78ff1a18'
-ROWS_GUID = '3b68356c-b11c-431a-aa5a-d7b1ca50b189'
-SUMMARY = 'Reveals mission constellations and enemy forecasts on the war table and briefing screen so you can choose your loadout before deployment.'
+SUMMARY = ('Shows every enemy a mission can spawn, named as on the Helldivers wiki, with spawn-rate meters, '
+           'on the war table and briefing screen so you can choose your loadout before deployment.')
+SUITES = ('bingus_text', 'locales', 'resolve', 'roster', 'panel', 'install', 'mission', 'presentation', 'budget')
 
 
 def run(arguments):
@@ -31,58 +33,47 @@ def run(arguments):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--rows', action='store_true', help='Build the alternate static rows package')
     parser.add_argument('--allow-untested', action='store_true', help='Build a local test package when the runtime differs from the in-game verified payload')
     args = parser.parse_args()
-    build = ROOT / ('build/rows' if args.rows else 'build')
+    build = ROOT / 'build'
     build.mkdir(parents=True, exist_ok=True)
     for filename, expected in [('bin/helldivers2.exe', EXE_SHA), ('data/game/game.dll', GAME_DLL_SHA)]:
         assert sha((GAME / filename).read_bytes()) == expected, 'Unsupported game build'
+    # Bundled translations must be data only and free of errors.
+    for path in locale_files(ROOT)[1:]:
+        problems = translations.check(ROOT / 'locales', path.stem, out=lambda line: None)
+        assert not problems.errors, '\n'.join(problems.errors)
     source = build / 'mod.wrapper.lua'
-    source.write_text(wrapper(ROOT, GAME_DLL_SHA, EXE_SHA, rows=args.rows), encoding='ascii', newline='\n')
+    source.write_text(wrapper(ROOT, GAME_DLL_SHA, EXE_SHA), encoding='utf-8', newline='\n')
     tests = ''
-    suites = ('resolve', 'panel', 'install', 'mission', 'heavy', 'presentation')
-    for name in suites + (('rows',) if args.rows else ()):
+    for name in SUITES:
         tests += run([LUA, ROOT / ('tests/test_' + name + '.lua'), ROOT / 'src'])
     compiled = build / 'mod.ljbc'
     run([LUA, '-bsdW', source, compiled])
     code = compiled.read_bytes()
     assert code[:5] == b'\x1bLJ\x02\x02'
     resource = struct.pack('<II', len(code), 2) + code
-    runtime_verified = sha(resource) == (TESTED_ROWS_RESOURCE_SHA if args.rows else TESTED_RESOURCE_SHA)
+    runtime_verified = sha(resource) == TESTED_RESOURCE_SHA
     assert runtime_verified or args.allow_untested, 'Runtime differs from the in-game verified payload; use --allow-untested for a local test build'
-    if args.rows:
-        # Keep verification of the scrolling alternative separate from rows.
-        baseline_source, baseline_code = build / 'scrolling.wrapper.lua', build / 'scrolling.ljbc'
-        baseline_source.write_text(wrapper(ROOT, GAME_DLL_SHA, EXE_SHA), encoding='ascii', newline='\n')
-        run([LUA, '-bsdW', baseline_source, baseline_code])
-        baseline = baseline_code.read_bytes()
-        scrolling_verified = sha(struct.pack('<II', len(baseline), 2) + baseline) == TESTED_RESOURCE_SHA
-        assert scrolling_verified or args.allow_untested, 'Scrolling runtime differs from the in-game verified payload'
-    revision = ROWS_REVISION if args.rows else REVISION
-    tests += run([LUA, ROOT / 'tests/test_package.lua', compiled, revision])
+    tests += run([LUA, ROOT / 'tests/test_package.lua', compiled, REVISION])
     (build / 'mod.lua.main').write_bytes(resource)
     for suffix, data in [('',make_archive({resource_hash(MODULE):resource})),('.stream',b''),('.gpu_resources',b'')]:
         (build / (ARCHIVE + suffix)).write_bytes(data)
     files = {f'data/{ARCHIVE}{s}':(build / (ARCHIVE+s)).relative_to(ROOT).as_posix()
              for s in ('','.stream','.gpu_resources')}
-    name = 'Know Your Constellation Rows' if args.rows else 'Know Your Constellation'
-    guid = ROWS_GUID if args.rows else GUID
-    summary = SUMMARY + (' Displays the complete forecast in static rows. Enable only one forecast variant.' if args.rows else '')
-    report = {'name':name,'slug':name.replace(' ',''),'revision':revision,'guid':guid,
-        'description':summary + ' Client-side only. Requires Bingus Shared Loader v18. Spawns are not guaranteed.',
+    name = 'Know Your Constellation'
+    report = {'name':name,'slug':name.replace(' ',''),'revision':REVISION,'guid':GUID,
+        'description':SUMMARY + ' Client-side only. Requires Bingus Shared Loader v18. Spawns are not guaranteed.',
         'module':MODULE,'game_exe_sha256':EXE_SHA,'game_dll_sha256':GAME_DLL_SHA,
         'runtime_verified':runtime_verified,'client_only':True,'network_calls':False,'gameplay_memory_writes':False,
         'requires':[{'name':'Bingus Shared Loader','revision':'loader-v12','api':1}],
         'deployment_files':files,'files':{p:sha((ROOT/p).read_bytes()) for p in files.values()},
         'resource_sha256':sha(resource),'offline_tests':tests.strip()}
     report['version'] = VERSION
-    if args.rows:
-        report.update(install_instructions='INSTALL-ROWS.txt')
     release = package_release(ROOT,build,report)
     with zipfile.ZipFile(release) as package:
         manifest = json.loads(package.read('manifest.json'))
-        assert manifest['Name']==name+' - '+VERSION and manifest['Guid']==guid
+        assert manifest['Name']==name+' - '+VERSION and manifest['Guid']==GUID
         assert manifest['IconPath']==manifest['Options'][0]['Image']=='thumbnail.png'
         archive = package.read('data/'+ARCHIVE)
         entry = struct.unpack_from('<7Q6I',archive,104)

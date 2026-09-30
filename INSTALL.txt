@@ -1,27 +1,36 @@
-Know Your Constellation - v3.16.1
+Know Your Constellation - v4.0
 
-Reveals mission constellations and enemy forecasts on the war table and
-briefing screen so you can choose your loadout before deployment.
+Shows every enemy a mission can spawn before you deploy, named as on the
+Helldivers wiki and weighted by how often they spawn, on the war table and
+the briefing screen.
 
-Release for Steam build 25480438 / EXE 1.8.46015.0. Offline checks passed; the
-mod loads in live play and runs its forecast on the galactic map. The layout
-was last confirmed on screen with v3.12.
-v3.16.1 changes only this documentation; the mod is identical to v3.16.
+Release for Steam build 25480438 / EXE 1.8.46015.0. Offline checks passed;
+checked in live play.
 
 INSTALL
 1. Close Helldivers 2.
-2. Import Know-Your-Constellation-v3.16.1.zip and Bingus-Shared-Loader-v18.zip
+2. Import Know-Your-Constellation-v4.0.zip and Bingus-Shared-Loader-v18.zip
    into Arsenal or HD2MM, then enable both.
 3. With Arsenal's default priority, put the shared loader last, then
    Purge / Deploy.
-Disable the previous Enemy Intelligence package if it remains listed. The
+v4.0 replaces both earlier layouts. Disable the Know Your Constellation Rows
+package and any old Enemy Intelligence package if they remain listed. The
 stable manager GUID and internal module name preserve one-copy startup.
 
+WHAT IT SHOWS
+- Large enemies with a spawn-rate meter (more filled bars = more common).
+- Small and medium enemies, most common first.
+- The subfaction or strain and the mission's constellation.
+The forecast hangs below the planet panel on the war table and below the
+mission panel on the briefing screen. While a mission is highlighted it may
+cover the squad list. It is hidden on loadout and when the corresponding
+preview is closed.
+
 Only players with the mod see the forecast. It does not change spawns,
-difficulty, gameplay rules or network traffic.
-Forecasts are shown on hosted and joinable mission previews and briefing.
-They are hidden on loadout and when the corresponding preview is closed.
-Spawns are not guaranteed. Unavailable mission data is withheld.
+difficulty, gameplay rules or network traffic. Spawns are not guaranteed.
+Map features (Stalker lairs, Shrieker nests, Gunship facilities) and
+objective-specific enemies are not forecast. Unavailable mission data is
+withheld.
 
 Supported game build: Steam build 25480438, executable 1.8.46015.0.
 The runtime checks the game and executable hashes and stops on a mismatch.
