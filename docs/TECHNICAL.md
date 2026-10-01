@@ -101,6 +101,29 @@ Language adds 5 reads on the first frame the forecast appears and on a frame
 where the native font changed, never on the frames counted above. The mod
 never queries memory protection and never writes game memory.
 
+## Exported roster
+
+Other mods can preview a forecast through `EnemyIntelligence.roster`, which
+is set when the module loads, before the first frame and before the build
+check. It reads no memory and draws nothing:
+
+- `api`: `1`. Fields are only added under this number; a change to an
+  existing one raises it.
+- `build`: the Steam build `roster_data.lua` was generated from. Compare it
+  with your own supported build before trusting the result.
+- `from_native(tag)`: native enemy tag (0-31) to the tag IDs below.
+- `title(tag)`: the English headline title of a tag, or nil.
+- `forecast(snapshot, zone, war)`: `snapshot` is `{faction=2|3|4,
+  difficulty=1..10, tags={...}}` with converted tag IDs; `zone` and `war` are
+  optional family hash to multiplier maps, as `mission.lua` collects them.
+  Returns `{large={{name=, ticks=}, ...}, small={name, ...}}` with English
+  unit names, ordered as the panel shows them. Invalid input raises, so call
+  it with `pcall`.
+
+The export keeps its own one-entry cache, so callers never evict the panel's
+forecast. Check `status` too: a value starting with `disabled:` means the
+game build is unsupported and the panel shows nothing.
+
 ## Compatibility
 
 The public name is Know Your Constellation. The legacy module identifier
