@@ -49,6 +49,7 @@
   "tests/frame_budget.lua",
   "tests/test_bingus_text.lua",
   "tests/test_budget.lua",
+  "tests/test_export.lua",
   "tests/test_install.lua",
   "tests/test_locales.lua",
   "tests/test_mission.lua",

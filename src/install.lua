@@ -2,6 +2,24 @@ return function(create_api,mission,resolve,roster,roster_data,model,panel,build,
     if rawget(_G,'EnemyIntelligence') then return end
     local state = {revision=build.revision,status='starting',reads=0,frames=0,failures=0}
     rawset(_G,'EnemyIntelligence',state)
+    -- Read-only roster for other mods (docs/TECHNICAL.md, Exported roster).
+    -- It has its own cache, so callers never evict the panel's forecast.
+    local exported = roster.new(roster_data)
+    local function forecast(snapshot,zone,war)
+        local report = exported:report(snapshot,zone,war)
+        local large,small = {},{}
+        for _,entry in ipairs(report.large) do
+            large[#large+1] = {name=roster_data.names[entry[1]][1],ticks=entry[2]}
+        end
+        for _,name in ipairs(report.small) do small[#small+1] = roster_data.names[name][1] end
+        return {large=large,small=small}
+    end
+    local function title(tag)
+        local key = model.TITLES[tag]
+        return key and locales.en.strings[key]
+    end
+    if jit and jit.off then jit.off(forecast) jit.off(title) end
+    state.roster = {api=1,build=roster_data.build,from_native=resolve.from_native,forecast=forecast,title=title}
     local api,source,surface,current,view,game,tr,font
     local forecasts = roster.new(roster_data)
     local started, elapsed = false, 0

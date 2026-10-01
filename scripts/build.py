@@ -20,7 +20,7 @@ ROOT = Path(__file__).resolve().parents[1]
 GUID = '9a9c8423-8f3e-4b7b-9a16-7d0b78ff1a18'
 SUMMARY = ('Shows every enemy a mission can spawn, named as on the Helldivers wiki, with spawn-rate meters, '
            'on the war table and briefing screen so you can choose your loadout before deployment.')
-SUITES = ('bingus_text', 'locales', 'resolve', 'roster', 'panel', 'install', 'mission', 'presentation', 'budget')
+SUITES = ('bingus_text', 'locales', 'resolve', 'roster', 'panel', 'install', 'export', 'mission', 'presentation', 'budget')
 
 
 def run(arguments):
