@@ -17,6 +17,7 @@
   "docs/RELEASE_NOTES.md",
   "docs/TECHNICAL.md",
   "locales/en.lua",
+  "locales/zh-Hans.lua",
   "publication-files.json",
   "scripts/archive.py",
   "scripts/build.py",
