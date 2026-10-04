@@ -25,6 +25,15 @@ PATTERNS = {
     'private_session': r'(?i)\bPID\s*[:=]?\s*\d{2,}\b',
 }
 
+# Files that v4.0 retired (the Rows layout and the heavy-unit catalogue of
+# v3.12-v3.16). They were reviewed when those releases shipped and are public
+# in the released history, so historical commits may hold them. The current
+# tree, its inventory and the packages still refuse them.
+RETIRED = frozenset({
+    'INSTALL-ROWS.txt', 'docs/ROWS.md', 'src/catalogue.lua', 'src/heavy.lua', 'src/heavy_data.lua', 'src/rows.lua',
+    'tests/test_heavy.lua', 'tests/test_rows.lua',
+})
+
 def sha(data):
     return hashlib.sha256(data).hexdigest().upper()
 
@@ -72,6 +81,8 @@ def git(*args):
 def audit(packages=(), history=False):
     allowed = json.loads((ROOT / 'publication-files.json').read_text(encoding='utf-8'))
     assert len(allowed) == len(set(allowed)) and 'publication-files.json' in allowed
+    present = sorted(name for name in RETIRED if name in allowed or (ROOT / name).exists())
+    assert not present, 'Retired file in the current tree: ' + ', '.join(present)
     findings, inventory, archives = [], [], []
     def inspect(data, label):
         if label.endswith('.png'): png(data)
@@ -94,7 +105,7 @@ def audit(packages=(), history=False):
                           if 'publication-files.json' in names else names)
             assert len(historical) == len(set(historical))
             assert set(names) == set(historical), 'Unexpected historical tree'
-            assert set(historical) <= set(allowed), 'Unreviewed historical file'
+            assert set(historical) <= set(allowed) | RETIRED, 'Unreviewed historical file'
             for name in names: inspect(git('show', commit + ':' + name), 'history/' + name)
             fields = git('show', '-s', '--format=%an%x00%ae%x00%cn%x00%ce%x00%B', commit).split(b'\0')
             assert fields[0] == fields[2] == b'CowboyBingus'

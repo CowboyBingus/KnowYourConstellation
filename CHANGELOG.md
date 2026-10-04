@@ -1,3 +1,23 @@
+# v4.1
+
+- New: Simplified Chinese translation by joyrhyme (pull request #3); it shows when the game's Text Language is Simplified Chinese.
+- Fixed: Hive Worlds list Hive Lords again, and other planet campaign modifiers such as Dragonroach activity apply again. On game build 25480438 the forecast read a stale offset that switched every one of them off.
+- Every Windows function the mod calls is declared under a private name, so another mod that declared the same functions first can no longer keep the forecast from starting.
+- With a game language other than English, a shared translation table left incomplete by another mod no longer keeps the forecast hidden.
+- A translation pack forces its language on every mod only when it sets `force = true`.
+- With the war table or briefing open, the forecast no longer creates garbage every frame: 3-7 KB per frame before (measured in game), none now (measured in the game's Lua runtime outside the game).
+- The 0.5 s refresh of a highlighted mission no longer creates garbage: 232 bytes per refresh before, 824 with spawn weights (measured in the game's Lua runtime outside the game).
+- On the ship and in missions, where the forecast is hidden, it no longer creates 128 bytes of garbage every frame (measured in the game's Lua runtime outside the game).
+- While the forecast waits for mission data with its panel up, it reuses one pending panel instead of making a new one every frame.
+- With the panel up, the font's resource IDs and the status line are rebuilt only when they change. The font is still checked every frame, so an unloaded font hides the panel at once.
+- Less of the mod's code is compiled into the game's shared LuaJIT code cache: about 49 KB instead of 59 KB in an offline play-like run.
+- The update runs on Bingus Shared Runtime's guard, the error policy the family's mods share, and the game build check uses the runtime's module hashes, read once per session for every mod.
+- After 8 errors in one burst the forecast removes its panel and stops for the session instead of retrying every frame. Errors about a minute (3600 frames) apart never add up, and each burst logs only its first error.
+- When the game's update or another mod's raises an error, the forecast removes its panel and pauses until 60 frames pass without one; 8 of them in a burst stop it.
+- Waiting while the game builds its menus or switches screens is not an error: the forecast hides and tries again on the next frame, however long it lasts.
+- The shutdown status keeps the first failure (`stopped after: <reason>`); a session without one keeps its last status.
+- Measured in live play: 0.007 ms per frame in missions and 0.013 on the ship.
+
 # v4.0
 
 - Shows the exact enemies each mission can spawn, read from the game's spawn tables for its constellation, subfaction and difficulty.

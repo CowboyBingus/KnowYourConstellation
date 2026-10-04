@@ -1,6 +1,6 @@
 # How the forecast is built
 
-Know Your Constellation v4.0 reads the enemy spawn tables in the game module of Steam build 25480438 (executable 1.8.46015.0) and replays their rules for the highlighted mission. Enemy names and size classes follow the [Helldivers Wiki](https://helldivers.wiki.gg).
+Know Your Constellation v4.1 reads the enemy spawn tables in the game module of Steam build 25480438 (executable 1.8.46015.0) and replays their rules for the highlighted mission. Enemy names and size classes follow the [Helldivers Wiki](https://helldivers.wiki.gg).
 
 ## Inputs
 

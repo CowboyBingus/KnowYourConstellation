@@ -16,8 +16,8 @@ Offline coverage:
   missions replace Bile Titans with Chargers except under the Spore Burst Strain).
 - The renderer is tested at six resolutions with short and long planet
   panels: every enemy is named at full or reduced text size, the box stays
-  between the planet panel and the prompt row on layers 990 and above, and
-  unchanged reports make no GUI calls.
+  between the planet panel and the prompt row on layers 1011-1015 (above the
+  squad nameplates), and unchanged reports make no GUI calls.
 - Per-frame game reads were counted for the ship, war table, briefing and
   loadout. They equal v3.16.1's counts in every state.
 

@@ -1,4 +1,4 @@
-> **v4.0** for Steam build 25480438 / EXE 1.8.46015.0. Offline checks passed; checked in live play.
+> **v4.1** for Steam build 25480438 / EXE 1.8.46015.0. Offline checks passed; checked in live play.
 
 ![Know Your Constellation](assets/banner.png)
 
@@ -15,8 +15,12 @@ Shows every enemy a mission can spawn before you deploy, named as on the Helldiv
 - Spawns are not guaranteed. Enemies from map features (Stalker lairs, Shrieker nests, Gunship facilities) and objective-specific targets are not forecast. See [how the forecast is built](docs/CONSTELLATIONS.md).
 - Translatable: every text, including enemy and constellation names, follows the game's Text Language when a translation is installed, in any script. Chinese and Japanese wrap between characters. [How to translate](TRANSLATING.md).
 
-**Install:** close the game, import `Know-Your-Constellation-v4.0.zip` and `Bingus-Shared-Loader-v18.zip` into Arsenal or HD2MM, enable both and Purge / Deploy. With Arsenal's default priority, put the loader last. v4.0 replaces both earlier layouts: disable the old Know Your Constellation Rows package if you used it. [Bingus Shared Loader](https://github.com/CowboyBingus/BingusSharedLoader/releases/latest) is a separate required download.
+**Install:** close the game, import `Know-Your-Constellation-v4.1.zip` and `Bingus-Shared-Loader-v18.zip` into Arsenal or HD2MM, enable both and Purge / Deploy. With Arsenal's default priority, put the loader last. v4.0 replaces both earlier layouts: disable the old Know Your Constellation Rows package if you used it. [Bingus Shared Loader](https://github.com/CowboyBingus/BingusSharedLoader/releases/latest) is a separate required download.
 
 **AI disclosure:** Claude Opus 5.5 assisted with research, implementation, tests and documentation.
 
-Current version: **v4.0**, for game build **25480438**. See [changes](CHANGELOG.md) and [validation coverage](docs/MIGRATION_VALIDATION.md).
+Current version: **v4.1**, for game build **25480438**. See [changes](CHANGELOG.md) and [validation coverage](docs/MIGRATION_VALIDATION.md).
+
+## License
+
+Zero-Clause BSD (0BSD): use, copy, modify and distribute for any purpose, with no conditions. See `LICENSE`.

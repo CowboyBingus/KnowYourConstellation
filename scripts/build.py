@@ -14,13 +14,16 @@ from module import MODULE, REVISION, TESTED_RESOURCE_SHA, locale_files, wrapper
 from package import package_release
 import translations
 
-VERSION = 'v4.0'
+VERSION = 'v4.1'
 
 ROOT = Path(__file__).resolve().parents[1]
 GUID = '9a9c8423-8f3e-4b7b-9a16-7d0b78ff1a18'
 SUMMARY = ('Shows every enemy a mission can spawn, named as on the Helldivers wiki, with spawn-rate meters, '
            'on the war table and briefing screen so you can choose your loadout before deployment.')
-SUITES = ('bingus_text', 'locales', 'resolve', 'roster', 'panel', 'install', 'mission', 'presentation', 'budget')
+# Each suite with its arguments after the source folder; the FFI name test runs
+# once per declaration order, each in a fresh Lua state.
+SUITES = ('bingus_text', 'locales', 'resolve', 'roster', 'panel', 'install', 'update_chain', 'mission', 'presentation',
+          'budget', 'panel_budget', 'pending', 'ffi_names sdk-first', 'ffi_names mod-first', 'ffi_names hostile')
 
 
 def run(arguments):
@@ -46,8 +49,9 @@ def main():
     source = build / 'mod.wrapper.lua'
     source.write_text(wrapper(ROOT, GAME_DLL_SHA, EXE_SHA), encoding='utf-8', newline='\n')
     tests = ''
-    for name in SUITES:
-        tests += run([LUA, ROOT / ('tests/test_' + name + '.lua'), ROOT / 'src'])
+    for suite in SUITES:
+        name, *extra = suite.split()
+        tests += run([LUA, ROOT / ('tests/test_' + name + '.lua'), ROOT / 'src', *extra])
     compiled = build / 'mod.ljbc'
     run([LUA, '-bsdW', source, compiled])
     code = compiled.read_bytes()

@@ -1,4 +1,4 @@
-Know Your Constellation - v4.0
+Know Your Constellation - v4.1
 
 Shows every enemy a mission can spawn before you deploy, named as on the
 Helldivers wiki and weighted by how often they spawn, on the war table and
@@ -9,7 +9,7 @@ checked in live play.
 
 INSTALL
 1. Close Helldivers 2.
-2. Import Know-Your-Constellation-v4.0.zip and Bingus-Shared-Loader-v18.zip
+2. Import Know-Your-Constellation-v4.1.zip and Bingus-Shared-Loader-v18.zip
    into Arsenal or HD2MM, then enable both.
 3. With Arsenal's default priority, put the shared loader last, then
    Purge / Deploy.

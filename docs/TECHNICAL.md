@@ -94,12 +94,90 @@ follows the game's language rather than a separate setting.
 ## Per-frame cost
 
 `tests/test_budget.lua` counts the game reads each frame makes with the real
-installer and readers: 2 on the ship, 16 with the war table open (64 on the
-0.5 s refresh of a highlighted mission), 18 on the briefing (68 on refresh)
-and 5 on the loadout screen. These equal v3.16.1's counts. Reading the Text
-Language adds 5 reads on the first frame the forecast appears and on a frame
-where the native font changed, never on the frames counted above. The mod
-never queries memory protection and never writes game memory.
+installer and readers: 2 on the ship and in missions, 16 with the war table
+open (64 on the 0.5 s refresh of a highlighted mission, with or without spawn
+weights and war effects), 30 while hovering another squad's joinable mission
+(99 on refresh), 18 on the briefing (68 on refresh) and 5 on the loadout
+screen. These equal v4.0's counts. Reading the Text Language adds 5 reads on
+the first frame the forecast appears and on a frame where the native font
+changed, never on the frames counted above. The mod never queries memory
+protection and never writes game memory.
+
+Reads land in buffers the readers keep, at plain-number addresses, and fields
+and pointers decode in place. A refresh refills tables that are kept as well:
+- The constellation draw keeps the game's 64-bit generator state as its two
+  32-bit words in plain numbers, every partial product exact in a double, and
+  fills reused tag lists. `tests/test_resolve.lua` checks the state word for
+  word against `uint64_t` arithmetic and the draws against the replica it
+  replaced.
+- A sample keeps its spawn-weight and war-effect tables and refills them.
+- The installer keeps a copy of the roster's last inputs, so an unchanged
+  refresh gets its report without the roster building its cache key again.
+  The display model is reused the same way.
+
+- The native font, its material and its atlas are read every frame (4 of the
+  16 reads of a steady war-table frame), so a font that is not ready hides the
+  panel on that frame; their hex IDs are formatted only when the words change,
+  and the status line is built only when its inputs change. The test pins zero
+  `string.format` calls on a steady frame.
+
+No frame allocates, refreshes included; the test pins that for every scenario,
+interpreted and compiled, in the workspace LuaJIT and the game's `lua51.dll`.
+The refresh path runs interpreted (`jit.off`): the resolver, the roster, the
+mission reader's sample and the installer's refresh helpers. Its loops add no
+traces to the game's shared LuaJIT code cache, and the test checks that no
+trace starts in the resolver, the roster or those helpers; the per-frame
+checks compile. Windows functions are declared under private names
+(`hd2kyc_*`), so another mod's declarations of the same functions cannot
+change how the reader calls them.
+
+`tests/test_panel_budget.lua` runs the real panel through a fake engine that
+allocates nothing and pins the panel's engine calls per frame:
+- While the panel is up, every frame makes three: `Application.main_world`,
+  `Application.worlds` and `Gui.resolution`. They stay per frame because each
+  catches a change the panel answers on that frame: a UI world that was
+  replaced or removed moves or hides the panel before it touches the GUI
+  again, and a new window size lays it out again.
+- A moving headline adds one `Gui.update_text`, with two
+  `IdString64.from_hex`, one `Vector3` and one `Color`: engine IDs and vectors
+  are temporary, so they are rebuilt each frame.
+- Hidden frames make none. The frame that hides the panel lists the worlds
+  once and destroys its GUI; a frame that clears or rebuilds the panel inside
+  its world check reuses that check's list instead of listing the worlds again.
+
+Hidden frames empty the panel's tables in place and waiting frames reuse one
+pending model, so the panel allocates nothing on any frame either. The cost
+and garbage of the engine calls themselves are unmeasured in game.
+
+## Update chain
+
+`install.lua` installs the vendored Bingus Shared Runtime guard (`src/bingus_runtime.lua`,
+byte-identical, hash pinned by `scripts/module.py`). The forecast's frame runs in the guard's
+`after`, after the previous update. The guard keeps the policy: previous update outside `pcall`,
+8 errors per burst (own errors and errors below counted apart, reset after 3600 clean frames),
+pause with the panel removed and resume after 60 clean frames, first failure kept through shutdown.
+The build is checked with `src/bingus_memory.lua`'s `verify_build`, whose module hashes are shared
+by every mod for the session. `bingus_write.lua` is never vendored; the build scans every `src/*.lua`
+for write APIs. `tests/test_update_chain.lua` covers each rule.
+
+Waiting is not an error. The readers and the panel raise expected transient
+states as constant tables (`{pending = reason, status = 'hidden: ' ..
+reason}`), so a waiting frame builds no string; the installer hides the
+forecast, starts the selection afresh, reports the reason and tries again on
+the next frame, as v4.0 did for every raised frame, and never counts the frame
+toward a stop. They are: game memory that cannot be read (`Mission data
+unavailable`, `Presentation data unavailable`), a record pointer that is not
+set yet (`Mission pointer unavailable`, `Presentation owner unavailable`),
+`Mission descriptor not ready`, `No highlighted mission`, `Briefing descriptor
+unavailable`, `Briefing owner unavailable`, `Native font is not ready`, and the
+panel's `UI worlds unavailable`, `Could not create forecast panel`, `Font
+material unavailable`, `Font metrics unavailable`, `Font caret unavailable`,
+`Retained rectangle unavailable`, `Retained text unavailable`, `Native panel
+unavailable` (window below 640x480) and `Forecast exceeds viewport`. Failed
+layout or bound checks (`... bound exceeded`, `Ambiguous ...`, `Unknown mission
+type`, invalid tags, draws or weights), invalid text and Lua errors count.
+`tests/test_pending.lua` and `tests/test_panel.lua` hold each wait for 10,000
+frames.
 
 ## Compatibility
 

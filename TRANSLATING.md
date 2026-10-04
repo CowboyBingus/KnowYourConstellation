@@ -6,7 +6,7 @@ The same files and the same tool work for all of them:
 | Mod | Its texts |
 | --- | --- |
 | Know Your Constellation | the forecast panel: captions, constellation names, enemy names |
-| Mod Options Menu | the MODS tab and its empty-state line |
+| Mod Options Menu | the MODS tab, its empty-state line, and the page control shown with more than 8 mods |
 | Mod Bindings Menu | the MODS tab, its empty-state line and default section name |
 | Better Lobby Management | escape-menu buttons, confirm dialogs, its Mod Options Menu entries, the DISBAND chat line |
 | Ship Station Hotkeys | its section name and two binding names in Mod Bindings Menu |
