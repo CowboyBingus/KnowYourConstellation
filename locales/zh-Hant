@@ -65,7 +65,7 @@ return {
         ['title.mindless_masses'] = '無意識群體',
         ['title.vote_snatchers'] = '選票盜賊',
         ['title.seaf_support'] = 'SEAF支援',
-        ['title.horde'] = '蟲族大軍',
+        ['title.horde'] = '大軍',
 
         -- Enemy names, plural, as on the Helldivers wiki. Use the names players of your
         -- language know (the game's own where it shows one).
