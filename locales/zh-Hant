@@ -25,7 +25,7 @@ return {
         ['panel.more'] = '以及其他{count}種',
         -- Between two enemy names in the list. Chinese and Japanese usually use an
         -- ideographic comma without spaces.
-        ['panel.list_separator'] = '，',
+        ['panel.list_separator'] = '、',
         -- Between two constellation names in the headline (one line under the title).
         ['headline.separator'] = ' // ',
         -- Headline when the mission has no special constellation.
@@ -41,7 +41,7 @@ return {
         ['title.flyer_composition'] = '飛行蟲群',
         ['title.light_bugs'] = '小型蟲群',
         ['title.bug_nursery'] = '育巢蟲群',
-        ['title.balanced_terminids'] = '均衡蟲群',
+        ['title.balanced_terminids'] = '混編蟲群',
         ['title.predator_strain'] = '掠食者品種',
         ['title.spore_burst_strain'] = '孢裂蟲變種',
         ['title.rupture_strain'] = '裂破變種',
@@ -52,7 +52,7 @@ return {
         ['title.artillery_forces'] = '炮兵部隊',
         ['title.air_composition'] = '空軍編制',
         ['title.armored_column'] = '裝甲縱隊',
-        ['title.balanced_automatons'] = '均衡機器人部隊',
+        ['title.balanced_automatons'] = '混編機器人部隊',
         ['title.jet_brigade'] = '噴射隊',
         ['title.cyborg_legion'] = '生化人',
         ['title.gunship_patrols'] = '武裝直升機巡邏隊',
