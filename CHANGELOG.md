@@ -1,3 +1,7 @@
+# v4.1.1
+
+- While neither the war table nor the briefing is open, the forecast reads only which screen is on top, and the game's Lua compiler no longer keeps retrying to compile its idle code. Measured in game: 0.010-0.013 ms per frame before and 0.006 now on the ship, 0.008 before and 0.005-0.006 now in missions.
+
 # v4.1
 
 - New: Simplified Chinese translation by joyrhyme (pull request #3); it shows when the game's Text Language is Simplified Chinese.

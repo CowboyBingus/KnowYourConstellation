@@ -94,11 +94,15 @@ follows the game's language rather than a separate setting.
 ## Per-frame cost
 
 `tests/test_budget.lua` counts the game reads each frame makes with the real
-installer and readers: 2 on the ship and in missions, 16 with the war table
+installer and readers: 1 on the ship and in missions, 16 with the war table
 open (64 on the 0.5 s refresh of a highlighted mission, with or without spawn
 weights and war effects), 30 while hovering another squad's joinable mission
 (99 on refresh), 18 on the briefing (68 on refresh) and 5 on the loadout
-screen. These equal v4.0's counts. Reading the Text Language adds 5 reads on
+screen. Apart from the ship and missions these equal v4.0's counts. There, an
+idle gate reads only the screen stack of the UI manager the last full check
+found, and every 30th frame runs that full 2-read check again; a war table or
+briefing on top of the stack ends the wait on the same frame
+(`tests/test_idle.lua`). Reading the Text Language adds 5 reads on
 the first frame the forecast appears and on a frame where the native font
 changed, never on the frames counted above. The mod never queries memory
 protection and never writes game memory.

@@ -1,6 +1,1 @@
-- New: Simplified Chinese translation by joyrhyme (pull request #3); it shows when the game's Text Language is Simplified Chinese.
-- Fixed: Hive Worlds list Hive Lords again, and other planet campaign modifiers such as Dragonroach activity apply again. On game build 25480438 the forecast read a stale offset that switched them off.
-- Another mod's Windows declarations or an incomplete shared translation table can no longer keep the forecast from starting or showing.
-- The forecast no longer creates garbage every frame: its memory reads, refreshes and hidden frames reuse their buffers and tables.
-- An error no longer stops the forecast for good: it hides its panel, tries again and stops only after 8 errors in one burst.
-- Measured in live play: 0.007 ms per frame in missions and 0.013 on the ship.
+- While neither the war table nor the briefing is open, the forecast reads only which screen is on top, and the game's Lua compiler no longer keeps retrying to compile its idle code. Measured in game: 0.010-0.013 ms per frame before and 0.006 now on the ship, 0.008 before and 0.005-0.006 now in missions.

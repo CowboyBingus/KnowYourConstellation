@@ -11,6 +11,7 @@ The same files and the same tool work for all of them:
 | Better Lobby Management | escape-menu buttons, confirm dialogs, its Mod Options Menu entries, the DISBAND chat line |
 | Ship Station Hotkeys | its section name and two binding names in Mod Bindings Menu |
 | Shallow Water Diving | its Mod Options Menu slider |
+| Match Your Colors | its Mod Options Menu choice and toggle, with their descriptions |
 
 Words the game already has (ON, OFF, the GALACTIC MAP, ARMORY and HELLPOD bindings, CONFIRM,
 CANCEL) are shown in the game's own translation and are not in these files.
@@ -70,7 +71,7 @@ python scripts/translations.py kit my-kit <repo>/locales <other repo>/locales
 
 The Vanilla Plus Megapack repository has the same tool, and its `components` folder is already a
 kit of every mod above: run the commands below in it with `components` as the kit. A pack built
-there covers all six mods, standalone or in the Megapack.
+there covers all seven mods, standalone or in the Megapack.
 
 ```
 python scripts/translations.py template <kit> zh-Hans
