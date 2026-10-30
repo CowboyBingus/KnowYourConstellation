@@ -1,6 +1,0 @@
-/build/
-/releases/
-/tools/
-/artifacts/
-__pycache__/
-*.pyc
